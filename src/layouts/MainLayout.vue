@@ -42,20 +42,44 @@
         </div>
 
         <q-space />
-        <div class="q-gutter-lg">
-          <q-btn outline round size="md" color="grey-7" icon="message">
-            <q-tooltip>通知</q-tooltip>
-          </q-btn>
 
+        <div class="q-gutter-lg" hidden>
           <q-btn unelevated rounded color="accent" label="铸造" padding="sm lg">
             <q-tooltip>铸造</q-tooltip>
           </q-btn>
 
+          <q-btn outline round size="md" color="grey-7" icon="notifications">
+            <q-badge rounded color="red" text-color="white" floating>
+              2
+            </q-badge>
+            <q-tooltip>通知</q-tooltip>
+          </q-btn>
+
           <q-btn round flat>
+            <q-menu
+              anchor="bottom start"
+              self="bottom start"
+              :offset="[60, -50]"
+            >
+              <q-list class="text-grey-8" style="min-width: 160px">
+                <q-item
+                  v-for="menu in accountMenu"
+                  :key="menu.text"
+                  clickable
+                  v-close-popup
+                  aria-hidden="true"
+                >
+                  <q-item-section avatar>
+                    <q-icon :name="menu.icon" />
+                  </q-item-section>
+                  <q-item-section>{{ menu.text }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+            <q-tooltip>用户</q-tooltip>
             <q-avatar>
               <img src="~assets/carket-logo.png" />
             </q-avatar>
-            <q-tooltip>用户</q-tooltip>
           </q-btn>
 
           <q-btn
@@ -69,6 +93,14 @@
             <q-tooltip>钱包</q-tooltip>
           </q-btn>
         </div>
+        <q-btn
+          unelevated
+          rounded
+          color="accent"
+          label="登录"
+          padding="sm lg"
+          @click="toLoginPage()"
+        />
       </q-toolbar>
     </q-header>
 
@@ -79,9 +111,6 @@
       content-class="bg-grey-1"
     >
       <q-list>
-        <q-item-label header class="text-grey-8">
-          Essential Links
-        </q-item-label>
         <EssentialLink
           v-for="link in essentialLinks"
           :key="link.title"
@@ -118,30 +147,6 @@ const linksData = [
     icon: "chat",
     link: "https://chat.quasar.dev",
   },
-  {
-    title: "Forum",
-    caption: "forum.quasar.dev",
-    icon: "record_voice_over",
-    link: "https://forum.quasar.dev",
-  },
-  {
-    title: "Twitter",
-    caption: "@quasarframework",
-    icon: "rss_feed",
-    link: "https://twitter.quasar.dev",
-  },
-  {
-    title: "Facebook",
-    caption: "@QuasarFramework",
-    icon: "public",
-    link: "https://facebook.quasar.dev",
-  },
-  {
-    title: "Quasar Awesome",
-    caption: "Community Quasar projects",
-    icon: "favorite",
-    link: "https://awesome.quasar.dev",
-  },
 ];
 
 export default {
@@ -153,7 +158,24 @@ export default {
     return {
       leftDrawerOpen: false,
       essentialLinks: linksData,
+
+      accountMenu: [
+        { icon: "person", text: "主页" },
+        { icon: "favorite", text: "收藏" },
+        { icon: "library_books", text: "集合" },
+        { icon: "settings", text: "设置" },
+        { icon: "logout", text: "退出" },
+      ],
     };
+  },
+  methods: {
+    toLoginPage() {
+      setTimeout(() => {
+        this.$router.push({
+          path: "/login",
+        });
+      }, 400);
+    },
   },
 };
 </script>
