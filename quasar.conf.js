@@ -23,7 +23,6 @@ module.exports = function (/* ctx */) {
     // https://v1.quasar.dev/quasar-cli/boot-files
     boot: [
 
-
     ],
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -42,7 +41,7 @@ module.exports = function (/* ctx */) {
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
       'roboto-font', // optional, you are not bound to it
-      'material-icons', // optional, you are not bound to it
+      'material-icons' // optional, you are not bound to it
     ],
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
@@ -69,7 +68,7 @@ module.exports = function (/* ctx */) {
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
       chainWebpack (chain) {
         chain.plugin('eslint-webpack-plugin')
-          .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
+          .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }])
       }
     },
 
@@ -77,7 +76,14 @@ module.exports = function (/* ctx */) {
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
+      proxy: {
+        '/': {
+          // target: 'http://localhost',
+          target: 'http://175.178.118.201',
+          changeOrigin: true
+        }
+      }
     },
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -99,7 +105,14 @@ module.exports = function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Loading',
+        'Notify',
+        'LoadingBar',
+        'LocalStorage',
+        'SessionStorage',
+        'Meta'
+      ]
     },
 
     // animations: 'all', // --- includes all animations
@@ -116,9 +129,9 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `Carket Market`,
-        short_name: `Carket`,
-        description: `Frontend of carket`,
+        name: 'Carket Market',
+        short_name: 'Carket',
+        description: 'Frontend of carket',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

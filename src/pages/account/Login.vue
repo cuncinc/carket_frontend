@@ -1,22 +1,22 @@
 <template>
-  <div class="sc-design">
-    <div>
-      <q-form @submit="onSubmit" @reset="onReset" ref="loginForm">
+  <div align="center">
+    <div class="q-pa-md" style="max-width: 400px">
+      <q-form @submit="onSubmit" @reset="onReset" ref="loginForm" class="q-gutter-md">
         <q-tabs
           v-model="tab"
           active-color="primary"
           indicator-color="primary"
-          align="left"
+          align="center"
           :breakpoint="0"
           narrow-indicator
           class="text-black"
         >
-          <q-tab name="mails" no-caps label="账号密码登录" />
-          <q-tab name="alarms" no-caps label="手机号登录" />
+          <q-tab name="usernameLogin" no-caps label="用户名登录" />
+          <q-tab name="phoneLogin" no-caps label="手机号登录" />
         </q-tabs>
         <div class="q-gutter-y-sm">
           <q-tab-panels v-model="tab" class="text-center">
-            <q-tab-panel name="mails" class="q-col-gutter-y-sm">
+            <q-tab-panel name="usernameLogin" class="q-col-gutter-y-sm">
               <div class="row">
                 <div class="col">
                   <q-input
@@ -24,17 +24,15 @@
                     clearable
                     clear-icon="cancel"
                     v-model="name"
-                    dense
                     debounce="500"
                     :label="userNameLabel"
                     lazy-rules
-                    square
-                    :rules="[
-                      (val) => (val && val.length > 0) || '请输入用户名',
-                    ]"
+                    rounded
+                    :rules="[(val) => (val && val.length > 0) || '请输入用户名',
+                      (val) => (val && val.length < 16) || '用户名长度大于16个字符',]"
                   >
                     <template v-slot:prepend>
-                      <q-icon name="event" />
+                      <q-icon name="person" />
                     </template>
                   </q-input>
                 </div>
@@ -42,20 +40,21 @@
               <div class="row">
                 <div class="col">
                   <q-input
+                    autocomplete="on"
                     outlined
                     clearable
                     clear-icon="cancel"
                     :type="isPwd ? 'password' : 'text'"
                     v-model="password"
-                    dense
                     debounce="500"
                     :label="passwordLabel"
                     lazy-rules
-                    square
-                    :rules="[(val) => (val && val.length > 0) || '请输入密码']"
+                    rounded
+                    :rules="[(val) => (val && val.length > 0) || '请输入密码',
+                      (val) => (val && val.length < 16) || '密码长度大于16个字符',]"
                   >
                     <template v-slot:prepend>
-                      <q-icon name="event" />
+                      <q-icon name="lock" />
                     </template>
                     <template v-slot:append>
                       <q-icon
@@ -69,7 +68,7 @@
               </div>
             </q-tab-panel>
 
-            <q-tab-panel name="alarms" class="q-col-gutter-y-sm">
+            <q-tab-panel name="phoneLogin" class="q-col-gutter-y-sm">
               <div class="row">
                 <div class="col">
                   <q-input
@@ -77,17 +76,16 @@
                     clearable
                     clear-icon="cancel"
                     v-model="name"
-                    dense
                     debounce="500"
-                    label="手机"
+                    label="手机号"
                     lazy-rules
-                    square
+                    rounded
                     :rules="[
                       (val) => (val && val.length > 0) || '请输入用户名',
                     ]"
                   >
                     <template v-slot:prepend>
-                      <q-icon name="event" />
+                      <q-icon name="smartphone"/>
                     </template>
                   </q-input>
                 </div>
@@ -98,21 +96,20 @@
                     outlined
                     :type="isPwd ? 'password' : 'text'"
                     v-model="password"
-                    dense
                     debounce="500"
                     label="验证码"
                     lazy-rules
-                    square
+                    rounded
                     :rules="[(val) => (val && val.length > 0) || '请输入密码']"
                   >
                     <template v-slot:prepend>
-                      <q-icon name="event" />
+                      <q-icon name="lock" />
                     </template>
                     <template v-slot:after>
                       <q-btn
                         unelevated
+                        rounded
                         color="secondary"
-                        class="no-border-radius"
                         label="获取验证码"
                       />
                     </template>
@@ -127,19 +124,18 @@
                 <q-checkbox v-model="autoLogin" label="自动登录" />
               </div>
               <div class="col text-right">
-                <q-btn no-caps color="primary" flat label="忘记密码" />
+                <q-btn no-caps color="gray7" flat label="忘记密码" />
               </div>
             </div>
             <div class="row">
               <div class="col">
                 <q-btn
-                  no-caps
-                  dense
+                  rounded
                   unelevated
-                  label="登录"
+                  label="登 录"
                   size="17px"
                   color="primary q-mt-sm"
-                  class="full-width no-border-radius"
+                  class="full-width"
                   type="submit"
                   :loading="loginLogin"
                 >
@@ -197,7 +193,7 @@ export default {
     return {
       userNameLabel: "用户名",
       passwordLabel: "密码",
-      tab: "mails",
+      tab: "usernameLogin",
       name: null,
       password: null,
       accept: false,
@@ -221,32 +217,35 @@ export default {
         .then(
           (response) => {
             const token = response.data;
-            // console.log(token)
-            this.loginLogin = true;
+            console.log(this.name + " 登录成功")
             setTimeout(() => {
-              // this.$q.notify({
-              //   color: 'white',
-              //   textColor: 'positive',
-              //   icon: 'check_circle',
-              //   position: 'top',
-              //   message: '登录成功'
-              // })
               this.loginLogin = true;
-              this.$q.localStorage.set("name", this.name);
-              this.$q.localStorage.set("token", token);
+              this.$q.localStorage.set("token", token)
+              this.$q.localStorage.set("isAccountLogin", true)
               this.$router.push({
                 path: "/",
               });
             }, 500);
           },
           (error) => {
-            console.log(error);
+            var status, messageText = "登录失败"
+            console.log("my_error"+error);
+            status = error.response.status
+            if (status == 401)
+              messageText = "用户名或密码不正确"
+            else if (status == 500)
+              messageText = "服务器发生错误"
+            else if (status == 404 || status == 504)
+              messageText = "网络连接失败"
+
             this.$q.notify({
-              color: "white",
-              textColor: "negative",
-              icon: "cancel",
+              // color: "negative",
+              // textColor: "white",
+              // icon: "cancel",
+              type: 'negative',
               position: "top",
-              message: "用户名或密码不正确",
+              // caption: "登录失败",
+              message: messageText,
               timeout: 1500,
             });
           }
