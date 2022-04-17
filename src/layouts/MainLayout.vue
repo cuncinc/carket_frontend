@@ -2,12 +2,11 @@
   <q-layout view="lHh Lpr lFf">
     <q-header style="background-color: white; padding: 10px 1em 10px">
       <q-toolbar>
-
         <q-btn
           flat
           dense
           unelevated
-          ripple="false"
+          no-ripple
           class="no-shadow no-ripple"
           to="/"
         >
@@ -40,7 +39,7 @@
         <q-space />
 
         <div class="row">
-          <div v-if="isAccountLogin" class="q-gutter-lg">
+          <div v-if="isAccountLogin === 'true'" class="q-gutter-lg">
             <q-btn
               unelevated
               rounded
@@ -110,12 +109,13 @@
 </template>
 
 <script>
+import axios from "src/utils/request.js";
 export default {
   name: "MainLayout",
   components: {},
   data() {
     return {
-      isAccountLogin: this.$q.localStorage.getItem("isAccountLogin"),
+      isAccountLogin: localStorage.getItem("isAccountLogin"),
 
       accountMenu: [
         { icon: "person", text: "主页" },
@@ -142,11 +142,13 @@ export default {
       }, 400);
     },
     toPersonPage() {
-      console.log("me");
+      setTimeout(() => {
+        this.$router.push({
+          path: "/account",
+        });
+      }, 500);
     },
-    toFavorite() {
-      console.log("favorite");
-    },
+    toFavorite() {},
     toCollection() {
       console.log("collection");
     },
@@ -154,8 +156,8 @@ export default {
       console.log("setting");
     },
     logout() {
-      this.$q.localStorage.remove("token");
-      this.$q.localStorage.set("isAccountLogin", false);
+      localStorage.removeItem("token");
+      localStorage.removeItem("isAccountLogin");
       this.$router.push({
         path: "/",
       });
@@ -167,6 +169,27 @@ export default {
         timeout: 1000,
       });
     },
+    checkAndRefreshToken() {
+      console.log("checkAndRefreshToken");
+      if (localStorage.isAccountLogin === "true") {
+        axios.put("/session").then(
+          (response) => {
+            var newToken = response.data.newToken;
+            console.log("newToken:  " + newToken);
+            localStorage.token = newToken;
+          },
+          (error) => {
+            console.log(error);
+            let status = error.response.status;
+            if (status === 401 || status === 400) logout();
+          }
+        );
+      }
+    },
+  },
+  mounted: function () {
+    console.log("MainLayout mounted");
+    this.checkAndRefreshToken();
   },
 };
 </script>

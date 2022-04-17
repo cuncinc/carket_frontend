@@ -14,6 +14,7 @@
     "@quasar/icongenie": "^2.5.1",
     "axios": "^0.26.1",
     "core-js": "^3.6.5",
+    "js-cookie": "^3.0.1",
     "quasar": "^1.0.0"
   },
   "devDependencies": {

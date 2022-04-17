@@ -1,192 +1,210 @@
 <template>
-  <div align="center">
-    <div class="q-pa-md" style="max-width: 400px">
-      <q-form @submit="onSubmit" @reset="onReset" ref="loginForm" class="q-gutter-md">
-        <q-tabs
-          v-model="tab"
-          active-color="primary"
-          indicator-color="primary"
-          align="center"
-          :breakpoint="0"
-          narrow-indicator
-          class="text-black"
-        >
-          <q-tab name="usernameLogin" no-caps label="用户名登录" />
-          <q-tab name="phoneLogin" no-caps label="手机号登录" />
-        </q-tabs>
-        <div class="q-gutter-y-sm">
-          <q-tab-panels v-model="tab" class="text-center">
-            <q-tab-panel name="usernameLogin" class="q-col-gutter-y-sm">
-              <div class="row">
-                <div class="col">
-                  <q-input
-                    outlined
-                    clearable
-                    clear-icon="cancel"
-                    v-model="name"
-                    debounce="500"
-                    :label="userNameLabel"
-                    lazy-rules
-                    rounded
-                    :rules="[(val) => (val && val.length > 0) || '请输入用户名',
-                      (val) => (val && val.length < 16) || '用户名长度大于16个字符',]"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="person" />
-                    </template>
-                  </q-input>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <q-input
-                    autocomplete="on"
-                    outlined
-                    clearable
-                    clear-icon="cancel"
-                    :type="isPwd ? 'password' : 'text'"
-                    v-model="password"
-                    debounce="500"
-                    :label="passwordLabel"
-                    lazy-rules
-                    rounded
-                    :rules="[(val) => (val && val.length > 0) || '请输入密码',
-                      (val) => (val && val.length < 16) || '密码长度大于16个字符',]"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="lock" />
-                    </template>
-                    <template v-slot:append>
-                      <q-icon
-                        :name="isPwd ? 'visibility_off' : 'visibility'"
-                        class="cursor-pointer"
-                        @click="isPwd = !isPwd"
-                      />
-                    </template>
-                  </q-input>
-                </div>
-              </div>
-            </q-tab-panel>
-
-            <q-tab-panel name="phoneLogin" class="q-col-gutter-y-sm">
-              <div class="row">
-                <div class="col">
-                  <q-input
-                    outlined
-                    clearable
-                    clear-icon="cancel"
-                    v-model="name"
-                    debounce="500"
-                    label="手机号"
-                    lazy-rules
-                    rounded
-                    :rules="[
-                      (val) => (val && val.length > 0) || '请输入用户名',
-                    ]"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="smartphone"/>
-                    </template>
-                  </q-input>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <q-input
-                    outlined
-                    :type="isPwd ? 'password' : 'text'"
-                    v-model="password"
-                    debounce="500"
-                    label="验证码"
-                    lazy-rules
-                    rounded
-                    :rules="[(val) => (val && val.length > 0) || '请输入密码']"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="lock" />
-                    </template>
-                    <template v-slot:after>
-                      <q-btn
-                        unelevated
+  <q-layout>
+    <q-page-container>
+      <q-page class="flex bg-image flex-center">
+        <q-card class="q-pa-md" style="width: 350px">
+          <q-form
+            @submit="onSubmit"
+            @reset="onReset"
+            ref="loginForm"
+            class="q-gutter-md"
+          >
+            <q-tabs
+              v-model="tab"
+              active-color="primary"
+              indicator-color="primary"
+              align="center"
+              :breakpoint="0"
+              narrow-indicator
+              class="text-black"
+            >
+              <q-tab name="usernameLogin" no-caps label="用户名登录" />
+              <q-tab name="phoneLogin" no-caps label="手机号登录" />
+            </q-tabs>
+            <div class="q-gutter-y-sm">
+              <q-tab-panels v-model="tab" class="text-center">
+                <q-tab-panel name="usernameLogin" class="q-col-gutter-y-sm">
+                  <div class="row">
+                    <div class="col">
+                      <q-input
+                        outlined
+                        clearable
+                        clear-icon="cancel"
+                        v-model="name"
+                        debounce="500"
+                        :label="userNameLabel"
+                        lazy-rules
                         rounded
-                        color="secondary"
-                        label="获取验证码"
-                      />
-                    </template>
-                  </q-input>
+                        :rules="[
+                          (val) => (val && val.length > 0) || '请输入用户名',
+                          (val) =>
+                            (val && val.length < 16) ||
+                            '用户名长度大于16个字符',
+                        ]"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="person" />
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <q-input
+                        autocomplete="on"
+                        outlined
+                        clearable
+                        clear-icon="cancel"
+                        :type="isPwd ? 'password' : 'text'"
+                        v-model="password"
+                        debounce="500"
+                        :label="passwordLabel"
+                        lazy-rules
+                        rounded
+                        :rules="[
+                          (val) => (val && val.length > 0) || '请输入密码',
+                          (val) =>
+                            (val && val.length < 16) || '密码长度大于16个字符',
+                        ]"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="lock" />
+                        </template>
+                        <template v-slot:append>
+                          <q-icon
+                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer"
+                            @click="isPwd = !isPwd"
+                          />
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                </q-tab-panel>
+
+                <q-tab-panel name="phoneLogin" class="q-col-gutter-y-sm">
+                  <div class="row">
+                    <div class="col">
+                      <q-input
+                        outlined
+                        clearable
+                        clear-icon="cancel"
+                        v-model="name"
+                        debounce="500"
+                        label="手机号"
+                        lazy-rules
+                        rounded
+                        :rules="[
+                          (val) => (val && val.length > 0) || '请输入用户名',
+                        ]"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="smartphone" />
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <q-input
+                        outlined
+                        :type="isPwd ? 'password' : 'text'"
+                        v-model="password"
+                        debounce="500"
+                        label="验证码"
+                        lazy-rules
+                        rounded
+                        :rules="[
+                          (val) => (val && val.length > 0) || '请输入密码',
+                        ]"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="lock" />
+                        </template>
+                        <template v-slot:after>
+                          <q-btn
+                            unelevated
+                            rounded
+                            color="secondary"
+                            label="获取验证码"
+                          />
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                </q-tab-panel>
+              </q-tab-panels>
+              <div class="q-mx-md">
+                <div class="row">
+                  <div class="col text-left">
+                    <q-checkbox v-model="autoLogin" label="自动登录" />
+                  </div>
+                  <div class="col text-right">
+                    <q-btn no-caps color="gray7" flat label="忘记密码" />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <q-btn
+                      rounded
+                      unelevated
+                      label="登 录"
+                      size="17px"
+                      color="primary q-mt-sm"
+                      class="full-width"
+                      type="submit"
+                      :loading="loginLogin"
+                    >
+                      <template v-slot:loading>
+                        <q-spinner-ios class="on-left" />
+                        登录中 ...
+                      </template>
+                    </q-btn>
+                  </div>
+                </div>
+                <div class="row q-pt-md">
+                  <div class="col text-right">
+                    <q-btn
+                      to="/user/register"
+                      color="primary"
+                      flat
+                      no-caps
+                      label="注册"
+                    />
+                  </div>
                 </div>
               </div>
-            </q-tab-panel>
-          </q-tab-panels>
-          <div class="q-mx-md">
-            <div class="row">
-              <div class="col text-left">
-                <q-checkbox v-model="autoLogin" label="自动登录" />
-              </div>
-              <div class="col text-right">
-                <q-btn no-caps color="gray7" flat label="忘记密码" />
-              </div>
             </div>
-            <div class="row">
-              <div class="col">
-                <q-btn
-                  rounded
-                  unelevated
-                  label="登 录"
-                  size="17px"
-                  color="primary q-mt-sm"
-                  class="full-width"
-                  type="submit"
-                  :loading="loginLogin"
-                >
-                  <template v-slot:loading>
-                    <q-spinner-ios class="on-left" />
-                    登录中 ...
-                  </template>
-                </q-btn>
-              </div>
-            </div>
-            <div class="row q-pt-md">
-              <div class="col text-right">
-                <q-btn
-                  to="/user/register"
-                  color="primary"
-                  flat
-                  no-caps
-                  label="注册"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </q-form>
-    </div>
+          </q-form>
 
-    <q-dialog
-      v-model="currentLogin.login"
-      persistent
-      transition-show="scale"
-      transition-hide="scale"
-    >
-      <q-card class="bg-teal text-white" style="width: 300px">
-        <q-card-section>
-          <div class="text-h6">Persistent</div>
-        </q-card-section>
+          <q-dialog
+            v-model="currentLogin.login"
+            persistent
+            transition-show="scale"
+            transition-hide="scale"
+          >
+            <q-card class="bg-teal text-white" style="width: 300px">
+              <q-card-section>
+                <div class="text-h6">Persistent</div>
+              </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          {{ currentLogin.obj }}
-        </q-card-section>
+              <q-card-section class="q-pt-none">
+                {{ currentLogin.obj }}
+              </q-card-section>
 
-        <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </div>
+              <q-card-actions align="right" class="bg-white text-teal">
+                <q-btn flat label="OK" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+        </q-card>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
-import axios from "axios";
+import axios from "src/utils/request.js";
 export default {
   name: "Login",
   data() {
@@ -216,33 +234,34 @@ export default {
         })
         .then(
           (response) => {
-            const token = response.data;
-            console.log(this.name + " 登录成功")
+            const token = response.data.token;
+            console.log(token);
+            console.log(this.name + " 登录成功");
             setTimeout(() => {
               this.loginLogin = true;
-              this.$q.localStorage.set("token", token)
-              this.$q.localStorage.set("isAccountLogin", true)
+              // localStorage.set("token", token);
+              // localStorage.set("isAccountLogin", true);
+              localStorage.token = token;
+              localStorage.isAccountLogin = true;
               this.$router.push({
                 path: "/",
               });
             }, 500);
           },
           (error) => {
-            var status, messageText = "登录失败"
-            console.log("my_error"+error);
-            status = error.response.status
-            if (status == 401)
-              messageText = "用户名或密码不正确"
-            else if (status == 500)
-              messageText = "服务器发生错误"
+            let messageText = "登录失败";
+            console.log("my_error" + error);
+            let status = error.response.status;
+            if (status == 401) messageText = "用户名或密码不正确";
+            else if (status == 500) messageText = "服务器发生错误";
             else if (status == 404 || status == 504)
-              messageText = "网络连接失败"
+              messageText = "网络连接失败";
 
             this.$q.notify({
               // color: "negative",
               // textColor: "white",
               // icon: "cancel",
-              type: 'negative',
+              type: "negative",
               position: "top",
               // caption: "登录失败",
               message: messageText,
@@ -278,7 +297,12 @@ export default {
 };
 </script>
 
-.flip-list-move {
-  transition: transform 1s;
+<style>
+.bg-image {
+  background-image: linear-gradient(135deg, #fff886 10%, #f072b6 100%);
+  /* background-image: linear-gradient( 135deg, #FCCF31 10%, #F55555 100%); */
+  /* background-image: linear-gradient(135deg, #7028e4 0%, #e5b2ca 100%); */
+  /* background-image: linear-gradient( 135deg, #FDEB71 10%, #F8D800 100%); */
+  /* background-image: linear-gradient(to right, rgb(255, 0, 184) 0%, rgb(100, 161, 255) 50%, rgb(0, 102, 255) 100%); */
 }
 </style>
