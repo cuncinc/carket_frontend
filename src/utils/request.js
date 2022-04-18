@@ -11,7 +11,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    console.log(config);
+    // console.log(config);
     // app.$vux.loading.show({
     //   text: "数据加载中……",
     // });
@@ -25,7 +25,7 @@ service.interceptors.request.use(
       let token = localStorage.token;
       Cookies.set("token", token);
       if (token) {
-        console.log(token);
+        // console.log(token);
         config.headers["token"] = token;
       }
     }

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr fFf" >
     <q-header style="background-color: white; padding: 10px 1em 10px">
       <q-toolbar>
         <q-btn
@@ -81,7 +81,7 @@
               </q-menu>
               <q-tooltip>用户</q-tooltip>
               <q-avatar>
-                <img src="carket-logo.png" />
+                <q-img class="placeholder" :src="me.avatarLink" ratio="1" />
               </q-avatar>
             </q-btn>
 
@@ -116,7 +116,7 @@ export default {
   data() {
     return {
       isAccountLogin: localStorage.getItem("isAccountLogin"),
-
+      me: JSON.parse(localStorage.getItem("me")),
       accountMenu: [
         { icon: "person", text: "主页" },
         { icon: "favorite", text: "收藏" },
@@ -175,7 +175,7 @@ export default {
         axios.put("/session").then(
           (response) => {
             var newToken = response.data.newToken;
-            console.log("newToken:  " + newToken);
+            // console.log("newToken:  " + newToken);
             localStorage.token = newToken;
           },
           (error) => {
@@ -188,7 +188,7 @@ export default {
     },
   },
   mounted: function () {
-    console.log("MainLayout mounted");
+    // console.log("MainLayout mounted");
     this.checkAndRefreshToken();
   },
 };
@@ -202,4 +202,10 @@ export default {
       text-decoration: none
       &:hover
         opacity: 0.7
+</style>
+
+<style>
+.placeholder {
+  background-image: linear-gradient(135deg, #fff886 10%, #f072b6 100%);
+}
 </style>

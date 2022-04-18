@@ -234,15 +234,17 @@ export default {
         })
         .then(
           (response) => {
-            const token = response.data.token;
-            console.log(token);
-            console.log(this.name + " 登录成功");
+            let token = response.data.token;
+            localStorage.token = token;
+            localStorage.isAccountLogin = true;
+            console.log(this.name + " 登录成功" + token);
+            axios.get("/user").then((response2) => {
+              console.log("user data");
+              let me = response2.data;
+              localStorage.me = JSON.stringify(me);
+            });
             setTimeout(() => {
               this.loginLogin = true;
-              // localStorage.set("token", token);
-              // localStorage.set("isAccountLogin", true);
-              localStorage.token = token;
-              localStorage.isAccountLogin = true;
               this.$router.push({
                 path: "/",
               });
