@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="hHh Lpr fFf" >
-    <q-header style="background-color: white; padding: 10px 1em 10px">
+  <q-layout view="hHh Lpr fFf">
+    <q-header class="header">
       <q-toolbar>
         <q-btn
           flat
@@ -20,7 +20,7 @@
           dense
           type="Search"
           placeholder="搜索艺术品、用户"
-          style="margin-left: 30px; width: 20%"
+          style="margin-left: 20px; width: 26%"
         >
           <template v-slot:prepend>
             <q-icon name="search" />
@@ -38,7 +38,7 @@
 
         <q-space />
 
-        <div class="row">
+        <div class="row" style="margin-right: 4px">
           <div v-if="isAccountLogin === 'true'" class="q-gutter-lg">
             <q-btn
               unelevated
@@ -153,7 +153,11 @@ export default {
       console.log("collection");
     },
     toSettings() {
-      console.log("setting");
+      setTimeout(() => {
+        this.$router.push({
+          path: "/settings",
+        });
+      }, 500);
     },
     logout() {
       localStorage.removeItem("token");
@@ -205,7 +209,8 @@ export default {
 </style>
 
 <style>
-.placeholder {
-  background-image: linear-gradient(135deg, #fff886 10%, #f072b6 100%);
+.header {
+  background-color: rgba(255, 255, 255, 94%);
+  padding: 10px 8px 10px;
 }
 </style>

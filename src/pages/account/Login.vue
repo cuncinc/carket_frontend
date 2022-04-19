@@ -1,7 +1,7 @@
 <template>
   <q-layout>
     <q-page-container>
-      <q-page class="flex bg-image flex-center">
+      <q-page class="flex bg-image flex-center page">
         <q-card class="q-pa-md" style="width: 350px">
           <q-form
             @submit="onSubmit"

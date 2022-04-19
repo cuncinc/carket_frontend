@@ -8,8 +8,9 @@
   ],
   "vetur.experimental.templateInterpolationService": true,
   "cSpell.words": [
-    "Carket",
-    "axios"
+    "axios",
+    "borderless",
+    "Carket"
   ],
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,

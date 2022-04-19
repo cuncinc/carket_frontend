@@ -68,10 +68,6 @@ export default {
 </script>
 
 <style>
-.page {
-  font-family: "Roboto Mono", monospace;
-  padding: 0 24px;
-}
 .username {
   font-size: 30px;
   font-weight: 600;
@@ -95,9 +91,5 @@ export default {
   font-weight: 400;
   font-size: 16px;
   text-align: center;
-}
-
-.placeholder {
-  background-image: linear-gradient(135deg, #fff886 10%, #f072b6 100%);
 }
 </style>
