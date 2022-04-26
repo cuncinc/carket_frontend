@@ -46,6 +46,7 @@
               color="primary"
               label="铸造"
               padding="sm lg"
+              @click="toCreate()"
             >
               <q-tooltip>铸造</q-tooltip>
             </q-btn>
@@ -127,6 +128,13 @@ export default {
     };
   },
   methods: {
+    toCreate() {
+      setTimeout(() => {
+        this.$router.push({
+          path: "/assets/create",
+        });
+      }, 500);
+    },
     actions(action) {
       if (action == "主页") this.toPersonPage();
       else if (action == "收藏") this.toFavorite();
