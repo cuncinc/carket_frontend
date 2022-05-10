@@ -86,7 +86,7 @@
               </q-avatar>
             </q-btn>
 
-            <q-btn outline round size="md" color="grey-7" icon="wallet">
+            <q-btn outline round size="md" color="grey-7" icon="account_balance_wallet">
               <q-tooltip>钱包</q-tooltip>
             </q-btn>
           </div>
@@ -193,7 +193,7 @@ export default {
           (error) => {
             console.log(error);
             let status = error.response.status;
-            if (status === 401 || status === 400) logout();
+            if (status === 401 || status === 400) this.logout();
           }
         );
       }

@@ -18,12 +18,12 @@
               narrow-indicator
               class="text-black"
             >
-              <q-tab name="usernameLogin" no-caps label="用户名登录" />
-              <q-tab name="phoneLogin" no-caps label="手机号登录" />
+              <q-tab name="userLogin" no-caps label="用户登录" />
+              <q-tab name="adminLogin" no-caps label="管理员登录" />
             </q-tabs>
             <div class="q-gutter-y-sm">
               <q-tab-panels v-model="tab" class="text-center">
-                <q-tab-panel name="usernameLogin" class="q-col-gutter-y-sm">
+                <q-tab-panel name="userLogin" class="q-col-gutter-y-sm">
                   <div class="row">
                     <div class="col">
                       <q-input
@@ -82,7 +82,7 @@
                   </div>
                 </q-tab-panel>
 
-                <q-tab-panel name="phoneLogin" class="q-col-gutter-y-sm">
+                <q-tab-panel name="adminLogin" class="q-col-gutter-y-sm">
                   <div class="row">
                     <div class="col">
                       <q-input
@@ -91,15 +91,16 @@
                         clear-icon="cancel"
                         v-model="name"
                         debounce="500"
-                        label="手机号"
+                        label="管理员账号"
                         lazy-rules
                         rounded
                         :rules="[
-                          (val) => (val && val.length > 0) || '请输入用户名',
+                          (val) =>
+                            (val && val.length > 0) || '请输入管理员账号',
                         ]"
                       >
                         <template v-slot:prepend>
-                          <q-icon name="smartphone" />
+                          <q-icon name="admin_panel_settings" />
                         </template>
                       </q-input>
                     </div>
@@ -111,7 +112,7 @@
                         :type="isPwd ? 'password' : 'text'"
                         v-model="password"
                         debounce="500"
-                        label="验证码"
+                        label="密码"
                         lazy-rules
                         rounded
                         :rules="[
@@ -121,12 +122,11 @@
                         <template v-slot:prepend>
                           <q-icon name="lock" />
                         </template>
-                        <template v-slot:after>
-                          <q-btn
-                            unelevated
-                            rounded
-                            color="secondary"
-                            label="获取验证码"
+                        <template v-slot:append>
+                          <q-icon
+                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                            class="cursor-pointer"
+                            @click="isPwd = !isPwd"
                           />
                         </template>
                       </q-input>
@@ -153,7 +153,7 @@
                       color="primary q-mt-sm"
                       class="full-width"
                       type="submit"
-                      :loading="loginLogin"
+                      :loading="logining"
                     >
                       <template v-slot:loading>
                         <q-spinner-ios class="on-left" />
@@ -169,7 +169,7 @@
                       color="primary"
                       flat
                       no-caps
-                      label="注册"
+                      label="用户注册"
                     />
                   </div>
                 </div>
@@ -211,14 +211,14 @@ export default {
     return {
       userNameLabel: "用户名",
       passwordLabel: "密码",
-      tab: "usernameLogin",
+      tab: "userLogin",
       name: null,
       password: null,
       accept: false,
       isPwd: true,
       autoLogin: true,
       card: false,
-      loginLogin: false,
+      logining: false,
       currentLogin: {
         login: false,
         obj: {},
@@ -227,6 +227,21 @@ export default {
   },
   methods: {
     onSubmit() {
+      if (this.tab === "userLogin") {
+        this.toUserLogin();
+      } else {
+        this.toAdminLogin();
+      }
+    },
+    onReset() {
+      this.name = null;
+      this.age = null;
+      this.accept = false;
+    },
+    activeForLoginType(iconKey, targetColor) {
+      this.iconObject[iconKey].class.color = targetColor;
+    },
+    toUserLogin() {
       axios
         .post("/session", {
           username: this.name,
@@ -244,7 +259,7 @@ export default {
               localStorage.me = JSON.stringify(me);
             });
             setTimeout(() => {
-              this.loginLogin = true;
+              this.logining = true;
               this.$router.push({
                 path: "/",
               });
@@ -272,23 +287,42 @@ export default {
           }
         );
     },
-    onReset() {
-      this.name = null;
-      this.age = null;
-      this.accept = false;
-    },
-    mouseOver(iconKey, event) {
-      this.activeForLoginType(iconKey, "text-primary");
-    },
-    mouseLeave(iconKey, event) {
-      this.activeForLoginType(iconKey, "text-grey");
-    },
-    activeForLoginType(iconKey, targetColor) {
-      this.iconObject[iconKey].class.color = targetColor;
-    },
-    thirdLogin(iconKey, event) {
-      this.currentLogin.login = true;
-      this.currentLogin.obj = this.iconObject[iconKey];
+    toAdminLogin() {
+      axios
+        .post("/audit/session", {
+          adminName: this.name,
+          password: this.password,
+        })
+        .then(
+          (response) => {
+            let adminToken = response.data.adminToken;
+            localStorage.adminToken = adminToken;
+            localStorage.isAdminLogin = true;
+            console.log(this.name + " 登录成功" + adminToken);
+            setTimeout(() => {
+              this.logining = true;
+              this.$router.push({
+                path: "/audit",
+              });
+            }, 500);
+          },
+          (error) => {
+            let messageText = "管理员登录失败";
+            console.log("my_error" + error);
+            let status = error.response.status;
+            if (status == 401) messageText = "管理员账号或密码不正确";
+            else if (status == 500) messageText = "服务器发生错误";
+            else if (status == 404 || status == 504)
+              messageText = "网络连接失败";
+
+            this.$q.notify({
+              type: "negative",
+              position: "top",
+              message: messageText,
+              timeout: 1500,
+            });
+          }
+        );
     },
   },
   computed: {

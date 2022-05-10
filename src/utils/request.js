@@ -29,6 +29,15 @@ service.interceptors.request.use(
         config.headers["token"] = token;
       }
     }
+    let isAdminLogin = localStorage.isAdminLogin;
+    if (isAdminLogin) {
+      let adminToken = localStorage.adminToken;
+      Cookies.set("adminToken", adminToken);
+      if (adminToken) {
+        config.headers["adminToken"] = adminToken;
+      }
+    }
+
     return config;
   },
   (error) => {

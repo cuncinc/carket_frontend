@@ -10,14 +10,17 @@ const routes = [
       { path: 'assets/create', component: () => import('pages/assets/Create.vue') },
     ]
   },
-
+  {
+    path: '/audit',
+    component: () => import('layouts/AuditLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/audit/Audit.vue') },
+    ]
+  },
   {
     path: '/login',
     component: () => import('pages/account/Login.vue')
   },
-
-
-
   // Always leave this as last one,
   // but you can also remove it
   {
