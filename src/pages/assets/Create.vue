@@ -108,16 +108,16 @@
 
           </q-card-section>
 
-          <!-- 按钮示例 -->
+
           <q-card-actions align="right">
             <q-btn hidden color="primary" label="去查看" @click="onDetailClick" />
             <q-btn color="primary" label="取消上传" @click="onCancelClick" />
           </q-card-actions>
         </q-card>
       </q-dialog>
-    </template>
+    </template> -->
   </q-page>
-</template> -->
+</template>
 
 <script>
 import axios from "src/utils/request.js";
