@@ -39,7 +39,9 @@
           @rejected="fileRejected"
           @input="fileLoaded"
           label="艺术品文件"
+          max-file-size="104857600"
           accept="image/*,video/*,audio/*"
+          :counter-label="counterLabelFn"
           style="margin-top: 16px"
         >
           <template v-slot:file="{ file }">
@@ -95,13 +97,15 @@
       <q-btn
         rounded
         unelevated
-        label="上传"
+        label="上传艺术品"
         color="primary"
-        size="md lg"
+        class="upload-btn"
         @click="create()"
       />
     </div>
-    <!-- <template>
+    <div style="margin-top: 64px" />
+  </q-page>
+  <!-- <template>
       <q-dialog ref="dialog" @hide="onDialogHide">
         <q-card class="q-dialog-plugin">
           <q-card-section>
@@ -116,7 +120,6 @@
         </q-card>
       </q-dialog>
     </template> -->
-  </q-page>
 </template>
 
 <script>
@@ -229,6 +232,7 @@ export default {
               progress: false,
               ok: true,
             });
+            //todo: OK后弹出这个框，点击OK应该去艺术品详情页
           }
         },
         (err) => {
@@ -295,6 +299,9 @@ export default {
     //   // 我们只需要隐藏对话框
     //   this.hide();
     // },
+    counterLabelFn({ totalSize }) {
+      return `${totalSize}`;
+    },
   },
   beforeCreate: function () {
     console.log("beforeCreate");
@@ -353,17 +360,23 @@ export default {
 .item {
   display: flex;
   flex-direction: column;
-  margin: 30px 0;
+  margin: 36px 0;
 }
 
 .label {
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 18px;
   color: rgb(4, 17, 29);
   margin-bottom: 10px;
 }
 
 .content {
   font-size: 14px;
+}
+
+.upload-btn {
+  line-height: 48px;
+  padding: 0 40px;
+  font-weight: 900;
 }
 </style>
