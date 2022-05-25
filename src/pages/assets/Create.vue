@@ -4,17 +4,59 @@
       <div class="title">上传艺术品</div>
       <div class="item">
         <div class="label">艺术品</div>
-        <q-img class="placeholder art-file" :src="path" />
+        <q-card flat id="art-file" class="art-file placeholder">
+          <q-img v-if="type === 'Picture'" :src="fileUrl" />
+          <q-media-player
+            v-else-if="type === 'Video'"
+            type="video"
+            :source="fileUrl"
+            :autoplay="true"
+            loop
+            hide-volume-btn
+            hide-settings-btn
+            radius="12px"
+            dense
+          />
+          <q-media-player
+            v-else-if="type === 'Music'"
+            type="audio"
+            :source="fileUrl"
+            :autoplay="false"
+            hide-settings-btn
+            hide-volume-btn
+            style="height: 280px"
+            radius="12px"
+            dense
+          />
+        </q-card>
         <q-file
           dense
           outlined
           clearable
+          use-chips
           counter
           v-model="file"
-          label="选择文件"
-          accept="image/*,video/*,music/*"
+          @rejected="fileRejected"
+          @input="fileLoaded"
+          label="艺术品文件"
+          accept="image/*,video/*,audio/*"
           style="margin-top: 16px"
         >
+          <template v-slot:file="{ file }">
+            <q-chip class="q-my-xs" square>
+              <q-avatar>
+                <q-icon :name="fileIcon" />
+              </q-avatar>
+
+              <div class="ellipsis relative-position">
+                {{ file.name }}
+              </div>
+
+              <q-tooltip>
+                {{ file.name }}
+              </q-tooltip>
+            </q-chip>
+          </template>
           <template v-slot:hint></template>
         </q-file>
       </div>
@@ -59,8 +101,23 @@
         @click="create()"
       />
     </div>
+    <!-- <template>
+      <q-dialog ref="dialog" @hide="onDialogHide">
+        <q-card class="q-dialog-plugin">
+          <q-card-section>
+
+          </q-card-section>
+
+          <!-- 按钮示例 -->
+          <q-card-actions align="right">
+            <q-btn hidden color="primary" label="去查看" @click="onDetailClick" />
+            <q-btn color="primary" label="取消上传" @click="onCancelClick" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </template>
   </q-page>
-</template>
+</template> -->
 
 <script>
 import axios from "src/utils/request.js";
@@ -68,59 +125,127 @@ export default {
   name: "Create",
   data() {
     return {
-      //v-model
       name: null,
       type: "Picture",
       desc: null,
       file: null,
       label: null,
-      //display
-      path: null,
+      fileIcon: null,
+      fileUrl: null,
+      uploadPercentage: null,
     };
   },
   methods: {
-    create() {
-      console.log(file);
+    fileLoaded(file) {
+      var card = document.getElementById("art-file");
+      card.style.height = null;
+      if (file === null) {
+        this.fileUrl = null;
+        this.type = "Picture";
+        card.style.height = "200px";
+        return;
+      }
+      this.type =
+        file.type.indexOf("video/") === 0
+          ? "Video"
+          : file.type.indexOf("image/") === 0
+          ? "Picture"
+          : file.type.indexOf("audio/") === 0
+          ? "Music"
+          : "Document";
+      this.fileIcon =
+        this.type === "Video"
+          ? "movie"
+          : this.type === "Picture"
+          ? "photo"
+          : this.type === "Music"
+          ? "audiotrack"
+          : "insert_drive_file";
+
+      const reader = new FileReader();
+      let that = this;
+      reader.onload = function fileReadCompleted() {
+        that.fileUrl = reader.result;
+        // console.log(that.fileUrl);
+      };
+      reader.readAsDataURL(file);
     },
-    updateCover() {
+    fileRejected() {
+      this.$q.notify({
+        type: "negative",
+        position: "top",
+        message: "不支持上传此类型的文件，请重新选择",
+        timeout: 2000,
+      });
+    },
+    create() {
       let that = this;
       let form = new FormData();
       form.append("file", this.file);
+      form.append("type", this.type);
+      form.append("name", this.name);
+      form.append("desc", this.desc);
       var config = {
         onUploadProgress: function (progressEvent) {
           var percentCompleted = Math.floor(
             (progressEvent.loaded / progressEvent.total) * 100
           );
-          //   that.coverPercentage = percentCompleted;
+          that.uploadPercentage = percentCompleted;
         },
       };
-      this.coverLoading = true;
-      axios.put("/user/avatar", form, config).then((response) => {
-        // this.coverLoading = false;
-        // this.coverPercentage = 0;
-        // this.cover = null;
-        if (response.status === 200) {
-          this.$q.notify({
-            type: "positive",
-            position: "top",
-            message: "头像修改成功",
-            timeout: 2000,
-          });
-          axios.get("/user").then((response2) => {
-            this.me = response2.data;
-            localStorage.me = JSON.stringify(this.me);
+
+      const dialog = this.$q.dialog({
+        title: "上传艺术品",
+        message: "上传中... 0%",
+        progress: true,
+        persistent: true, // we want the user to not be able to close it
+        ok: false, // we want the user to not be able to close it
+      });
+
+      const interval = setInterval(() => {
+        if (that.uploadPercentage >= 100) {
+          dialog.update({
+            message: `文件正存储入IPFS...`,
           });
         } else {
+          dialog.update({
+            message: `上传中... ${that.uploadPercentage}%`,
+          });
+        }
+      }, 500);
+      axios.post("/assets", form, config).then(
+        (response) => {
+          this.uploadPercentage = 0;
+          this.file = null;
+          this.fileUrl = null;
+          this.name = null;
+          this.desc = null;
+          clearInterval(interval);
+
+          if (response.status === 201) {
+            dialog.update({
+              title: "上传成功",
+              message: `艺术品上传成功`,
+              progress: false,
+              ok: true,
+            });
+          }
+        },
+        (err) => {
+          this.uploadPercentage = 0;
+          clearInterval(interval);
+          setTimeout(() => {
+            dialog.hide();
+          }, 350);
           this.$q.notify({
             type: "negative",
             position: "top",
-            message: "失败",
+            message: "上传失败",
             timeout: 2000,
           });
         }
-      });
+      );
     },
-
     updateMe() {
       var obj = {};
       let m = JSON.parse(localStorage.me);
@@ -153,6 +278,23 @@ export default {
         }
       );
     },
+    // show() {
+    //   this.$refs.dialog.show();
+    // },
+    // hide() {
+    //   this.$refs.dialog.hide();
+    // },
+    // onDialogHide() {
+    //   this.$emit("hide");
+    // },
+    // onDetailClick() {
+    //   this.$emit("ok");
+    //   this.hide();
+    // },
+    // onCancelClick() {
+    //   // 我们只需要隐藏对话框
+    //   this.hide();
+    // },
   },
   beforeCreate: function () {
     console.log("beforeCreate");
@@ -194,10 +336,9 @@ export default {
   text-align: left;
 }
 .art-file {
-  border-radius: 10px;
+  border-radius: 12px;
   min-width: 80%;
-  max-height: 300px;
-  min-height: 200px;
+  min-height: 280px;
 }
 
 .middle {

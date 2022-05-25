@@ -8,6 +8,7 @@
   ],
   "vetur.experimental.templateInterpolationService": true,
   "cSpell.words": [
+    "audiotrack",
     "axios",
     "borderless",
     "Carket",

@@ -33,7 +33,7 @@
           <a href="javascript:void(0)" class="text-black"> 探索 </a>
           <a href="javascript:void(0)" class="text-black"> 排名 </a>
           <a href="javascript:void(0)" class="text-black"> 资源 </a>
-          <a href="javascript:void(0)" class="text-black"> 铸造 </a>
+          <a href="javascript:void(0)" class="text-black"> 溯源 </a>
         </div>
 
         <q-space />
@@ -44,11 +44,11 @@
               unelevated
               rounded
               color="primary"
-              label="铸造"
+              label="上传"
               padding="sm lg"
               @click="toCreate()"
             >
-              <q-tooltip>铸造</q-tooltip>
+              <q-tooltip>上传艺术品</q-tooltip>
             </q-btn>
 
             <q-btn outline round size="md" color="grey-7" icon="notifications">
