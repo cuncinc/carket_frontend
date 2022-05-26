@@ -253,7 +253,7 @@ export default {
             localStorage.token = token;
             localStorage.isAccountLogin = true;
             console.log(this.name + " 登录成功" + token);
-            axios.get("/user").then((response2) => {
+            axios.get("/users/me").then((response2) => {
               console.log("user data");
               let me = response2.data;
               localStorage.me = JSON.stringify(me);
@@ -289,7 +289,7 @@ export default {
     },
     toAdminLogin() {
       axios
-        .post("/audit/session", {
+        .post("/audits/session", {
           adminName: this.name,
           password: this.password,
         })

@@ -174,12 +174,12 @@ export default {
         path: "/",
       });
       this.$router.go(0);
-      this.$q.notify({
-        type: "info",
-        position: "top",
-        message: "已退出当前账号",
-        timeout: 1000,
-      });
+      // this.$q.notify({
+      //   type: "info",
+      //   position: "top",
+      //   message: "已退出当前账号",
+      //   timeout: 1000,
+      // });
     },
     checkAndRefreshToken() {
       console.log("checkAndRefreshToken");

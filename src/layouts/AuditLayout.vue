@@ -92,17 +92,17 @@ export default {
       this.$router.push({
         path: "/login",
       });
-      this.$q.notify({
-        type: "info",
-        position: "top",
-        message: "已退出管理员账号",
-        timeout: 1000,
-      });
+      // this.$q.notify({
+      //   type: "info",
+      //   position: "top",
+      //   message: "已退出管理员账号",
+      //   timeout: 1000,
+      // });
     },
     checkAndRefreshToken() {
       console.log("checkAndRefreshToken");
       if (localStorage.isAdminLogin === "true") {
-        axios.put("/audit/session").then(
+        axios.put("/audits/session").then(
           (response) => {
             var newToken = response.data.newToken;
             // console.log("newAdminToken:  " + newToken);

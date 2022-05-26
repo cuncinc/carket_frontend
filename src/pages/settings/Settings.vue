@@ -232,7 +232,7 @@ export default {
         },
       };
       this.avatarLoading = true;
-      axios.put("/user/avatar", form, config).then((response) => {
+      axios.put("/users/me/avatar", form, config).then((response) => {
         this.avatarLoading = false;
         this.avatarPercentage = 0;
         this.avatar = null;
@@ -243,7 +243,7 @@ export default {
             message: "头像修改成功",
             timeout: 2000,
           });
-          axios.get("/user").then((response2) => {
+          axios.get("/users/me").then((response2) => {
             this.me = response2.data;
             localStorage.me = JSON.stringify(this.me);
           });
@@ -271,7 +271,7 @@ export default {
         },
       };
       this.coverLoading = true;
-      axios.put("/user/cover", form, config).then((response) => {
+      axios.put("/users/me/cover", form, config).then((response) => {
         this.coverLoading = false;
         this.coverPercentage = 0;
         this.cover = null;
@@ -282,7 +282,7 @@ export default {
             message: "封面修改成功",
             timeout: 2000,
           });
-          axios.get("/user").then((response2) => {
+          axios.get("/users/me").then((response2) => {
             this.me = response2.data;
             localStorage.me = JSON.stringify(this.me);
           });
@@ -302,7 +302,7 @@ export default {
       if (this.me.username !== m.username) obj["username"] = this.me.username;
       if (this.me.email !== m.email) obj["email"] = this.me.email;
       if (this.me.bio !== m.bio) obj["bio"] = this.me.bio;
-      axios.put("/user", obj).then(
+      axios.put("/users/me", obj).then(
         (response) => {
           console.log(response);
           if (response.status === 200) {
@@ -363,9 +363,7 @@ export default {
         m.email === this.me.email
       ) {
         return true;
-      }
-      else if (this.me.username === "")
-        return true;
+      } else if (this.me.username === "") return true;
       return false;
     },
 

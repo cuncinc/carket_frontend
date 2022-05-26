@@ -177,18 +177,20 @@ export default {
       this.rejecting = true;
     },
     pass(aid) {
-      axios.post("/audit", [{ aid: aid, state: "已通过" }]).then((response) => {
-        let asset = this.todoAudits.find((x) => x.aid === aid);
-        console.log(asset);
-        asset.state = "已通过";
-      });
+      axios
+        .post("/audits", [{ aid: aid, state: "已通过" }])
+        .then((response) => {
+          let asset = this.todoAudits.find((x) => x.aid === aid);
+          console.log(asset);
+          asset.state = "已通过";
+        });
     },
     reject() {
       console.log("reject");
       let aid = this.rejectAid;
       this.rejectAid = null;
       axios
-        .post("/audit", [{ aid: aid, state: "未通过", reason: this.reason }])
+        .post("/audits", [{ aid: aid, state: "未通过", reason: this.reason }])
         .then((response) => {
           let asset = this.todoAudits.find((x) => x.aid === aid);
           console.log(asset);
@@ -204,7 +206,7 @@ export default {
   created() {
     console.log("before mount");
     axios
-      .get("/audit/todo", {
+      .get("/audits/todo", {
         params: {
           //   page: this.pagination.page,
           //   num: this.pagination.rowsPerPage,

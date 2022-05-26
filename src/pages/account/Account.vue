@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     getUser() {
-      axios.get("/user").then((response) => {
+      axios.get("/users/me").then((response) => {
         console.log("user data");
         this.me = response.data;
         console.log(this.me);

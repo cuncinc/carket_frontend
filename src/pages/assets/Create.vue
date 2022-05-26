@@ -256,7 +256,7 @@ export default {
       if (this.me.username !== m.username) obj["username"] = this.me.username;
       if (this.me.email !== m.email) obj["email"] = this.me.email;
       if (this.me.bio !== m.bio) obj["bio"] = this.me.bio;
-      axios.put("/user", obj).then(
+      axios.put("/users/me", obj).then(
         (response) => {
           console.log(response);
           if (response.status === 200) {
