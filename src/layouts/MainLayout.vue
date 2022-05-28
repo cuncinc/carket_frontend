@@ -86,7 +86,13 @@
               </q-avatar>
             </q-btn>
 
-            <q-btn outline round size="md" color="grey-7" icon="account_balance_wallet">
+            <q-btn
+              outline
+              round
+              size="md"
+              color="grey-7"
+              icon="account_balance_wallet"
+            >
               <q-tooltip>钱包</q-tooltip>
             </q-btn>
           </div>
@@ -170,6 +176,7 @@ export default {
     logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("isAccountLogin");
+      localStorage.removeItem("me");
       this.$router.push({
         path: "/",
       });
@@ -182,7 +189,7 @@ export default {
       // });
     },
     checkAndRefreshToken() {
-      console.log("checkAndRefreshToken");
+      console.log("####checkAndRefreshToken####");
       if (localStorage.isAccountLogin === "true") {
         axios.put("/session").then(
           (response) => {

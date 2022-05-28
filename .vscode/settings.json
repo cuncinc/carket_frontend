@@ -12,6 +12,7 @@
     "axios",
     "borderless",
     "Carket",
+    "ipfs",
     "logining"
   ],
   "editor.formatOnPaste": true,
