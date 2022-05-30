@@ -13,7 +13,8 @@
     "borderless",
     "Carket",
     "ipfs",
-    "logining"
+    "logining",
+    "reup"
   ],
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,

@@ -60,6 +60,16 @@
             <div v-else-if="asset.type === 'Music'">音乐</div>
             <div v-else-if="asset.type === 'Document'">文档</div>
           </q-chip>
+          <div class="row" style="align-items: center; color: rgb(235, 87, 87)">
+            <q-btn
+              flat
+              round
+              @click="like"
+              :icon="likeByMe ? 'favorite' : 'favorite_border'"
+            />
+            <q-tooltip>{{ asset.favoriteCount }}</q-tooltip>
+            <!-- <div>{{ asset.favoriteCount }}</div> -->
+          </div>
           <q-space />
           <q-chip
             square
@@ -118,7 +128,7 @@
         </div>
         <!-- 我的视角  👇 -->
         <div v-if="ownerIsMe" class="q-gutter-md">
-          <div v-if="asset.state === '在链上'">
+          <div v-if="asset.state === '未流通'">
             <q-btn
               label="上架流通"
               @click="up"
@@ -144,7 +154,7 @@
               style="margin-top: 16px"
             />
           </div>
-          <div v-else-if="asset.state === '已下架'">
+          <!-- <div v-else-if="asset.state === '已下架'">
             <q-btn
               label="再上架"
               @click="reup"
@@ -152,7 +162,7 @@
               size="lg"
               class="btn-fullfil"
             />
-          </div>
+          </div> -->
           <div>
             <q-btn
               label="转让"
@@ -190,7 +200,7 @@
           />
         </div>
         <q-slide-transition class="slide">
-          <card flat v-show="detailVisible" class="q-gutter-sm">
+          <q-card flat v-show="detailVisible" class="q-gutter-sm">
             <div class="row">
               <div class="info-key">tokenId</div>
               <q-space />
@@ -213,7 +223,7 @@
               <q-space />
               <div class="info-value">{{ asset.createTime }}</div>
             </div>
-          </card>
+          </q-card>
         </q-slide-transition>
       </q-card>
     </div>
@@ -223,11 +233,14 @@
 
 <script>
 import axios from "src/utils/request.js";
+import TransferDialog from "components/dialog/TransferDialog";
+import UpDialog from "components/dialog/UpDialog";
 export default {
   name: "AssetsDetail",
   data() {
     return {
       ownerIsMe: false,
+      likeByMe: false,
       asset: {
         name: null,
         state: null,
@@ -243,18 +256,39 @@ export default {
     };
   },
   methods: {
-    transfer() {},
+    transfer() {
+      let that = this;
+      this.$q.dialog({
+        component: TransferDialog,
+        parent: this,
+        aid: ~~that.asset.aid,
+        refresh: this.init,
+      });
+    },
     setPrice() {},
     buy() {},
     edit() {},
     mint() {},
-    up() {},
-    reup() {},
+    up() {
+      let that = this;
+      this.$q.dialog({
+        component: UpDialog,
+        parent: this,
+        aid: ~~that.asset.aid,
+        refresh: this.init,
+      });
+    },
     down() {
       let me = JSON.parse(localStorage.getItem("me"));
       if (me.address === this.asset.owner) {
         axios.delete("/assets/" + this.asset.aid + "/market").then(
           (response) => {
+            this.$q.notify({
+              type: "positive",
+              position: "top",
+              message: "艺术品已被下架",
+              timeout: 2000,
+            });
             this.init(this.asset.aid);
           },
           (error) => {
@@ -277,7 +311,75 @@ export default {
       }
     },
     report() {
-      console.log("report");
+      //todo 举报原因
+      let data = { tokenId: this.asset.tokenId, why: "test" };
+      axios.post("/reports", data).then(
+        (response) => {
+          this.$q.notify({
+            type: "positive",
+            position: "top",
+            message: "举报成功",
+            timeout: 2000,
+          });
+        },
+        (error) => {
+          let message = "举报失败";
+          if (error.response.status === 401) message = "举报失败，请先登录";
+          this.$q.notify({
+            type: "negative",
+            position: "top",
+            message: message,
+            timeout: 2000,
+          });
+        }
+      );
+    },
+    like() {
+      let me = JSON.parse(localStorage.getItem("me"));
+      if (me === null) {
+        this.$q.notify({
+          type: "negative",
+          position: "top",
+          message: "你还没有登录，无法收藏艺术品",
+          timeout: 2000,
+        });
+        return;
+      }
+      if (this.likeByMe) {
+        //取消收藏
+        axios.delete("/favorites/" + this.asset.aid).then(
+          (response) => {
+            this.likeByMe = false;
+            this.asset.favoriteCount = response.data.count;
+          },
+          (error) => {
+            console.log(error);
+            this.$q.notify({
+              type: "negative",
+              position: "top",
+              message: "取消收藏失败",
+              timeout: 2000,
+            });
+          }
+        );
+      } else {
+        axios.post("/favorites/" + this.asset.aid).then(
+          (response) => {
+            this.likeByMe = true;
+            // this.asset.favoriteCount += 1;
+            this.asset.favoriteCount = response.data.count;
+          },
+          (error) => {
+            console.log(error);
+            this.$q.notify({
+              type: "negative",
+              position: "top",
+              message: "收藏失败",
+              timeout: 2000,
+            });
+          }
+        );
+      }
     },
     openIpfsFile() {
       window.open(this.asset.ipfsLink, "_blank");
@@ -296,27 +398,38 @@ export default {
         })
         .then(
           (response) => {
-            console.log(response.data);
             this.asset = response.data;
-
+            // 获取创作者
             axios.get("/users/" + this.asset.creator).then((response) => {
               this.creator = response.data;
             });
-
-            let ownerAddrss = this.asset.owner;
-            if (ownerAddrss !== null && ownerAddrss !== "") {
-              axios.get("/users/" + ownerAddrss).then((response) => {
+            // 获取拥有者
+            let ownerAddress = this.asset.owner;
+            if (ownerAddress !== null && ownerAddress !== "") {
+              axios.get("/users/" + ownerAddress).then((response) => {
                 this.owner = response.data;
                 if (me !== null && me.address === this.owner.address)
                   this.ownerIsMe = true;
                 else this.ownerIsMe = false;
-                console.log("ownerIsMe: " + this.ownerIsMe);
               });
             } else {
               this.owner = null;
               this.ownerIsMe = false;
             }
-
+            // 获取我是否喜欢此艺术品
+            if (me !== null) {
+              axios.get("/favorites/" + id + "/" + me.address).then(
+                (response) => {
+                  this.likeByMe = response.data.favorite;
+                  // this.likeByMe = true;
+                  this.asset.favoriteCount = response.data.count;
+                },
+                (error) => {
+                  this.likeByMe = false;
+                }
+              );
+            }
+            // 类型图标
             this.typeIcon =
               this.asset.type === "Video"
                 ? "movie"
@@ -356,7 +469,7 @@ export default {
     },
   },
   created: function () {
-    console.log("Assets Detail: Created");
+    // console.log("Assets Detail: Created");
     let aid = this.$route.params.aid;
     this.init(aid);
   },

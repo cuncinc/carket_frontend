@@ -165,7 +165,7 @@
                 <div class="row q-pt-md">
                   <div class="col text-right">
                     <q-btn
-                      to="/user/register"
+                      to="/register"
                       color="primary"
                       flat
                       no-caps
