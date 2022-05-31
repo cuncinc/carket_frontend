@@ -233,6 +233,7 @@
 
 <script>
 import axios from "src/utils/request.js";
+import PriceDialog from "components/dialog/PriceDialog";
 import TransferDialog from "components/dialog/TransferDialog";
 import UpDialog from "components/dialog/UpDialog";
 export default {
@@ -256,6 +257,9 @@ export default {
     };
   },
   methods: {
+    buy() {},
+    edit() {},
+    mint() {},
     transfer() {
       let that = this;
       this.$q.dialog({
@@ -265,10 +269,15 @@ export default {
         refresh: this.init,
       });
     },
-    setPrice() {},
-    buy() {},
-    edit() {},
-    mint() {},
+    setPrice() {
+      let that = this;
+      this.$q.dialog({
+        component: PriceDialog,
+        parent: this,
+        aid: ~~that.asset.aid,
+        refresh: this.init,
+      });
+    },
     up() {
       let that = this;
       this.$q.dialog({
