@@ -35,18 +35,24 @@
           />
         </div>
         <div class="row" style="align-items: center; margin-top: 16px">
-          <q-avatar size="40px">
-            <q-img class="placeholder" :src="creator.avatarLink" ratio="1" />
-            <q-tooltip>创作者： {{ creator.username }}</q-tooltip>
-          </q-avatar>
-          <q-avatar
+          <q-btn round flat :to="'/users/' + creator.address">
+            <q-avatar size="40px">
+              <q-img class="placeholder" :src="creator.avatarLink" ratio="1" />
+              <q-tooltip>创作者： {{ creator.username }}</q-tooltip>
+            </q-avatar>
+          </q-btn>
+          <q-btn
+            round
+            flat
             v-if="owner !== null"
-            size="40px"
+            :to="'/users/' + owner.address"
             style="margin-left: -10px"
           >
-            <q-img class="placeholder" :src="owner.avatarLink" ratio="1" />
-            <q-tooltip>拥有者： {{ owner.username }}</q-tooltip>
-          </q-avatar>
+            <q-avatar size="40px">
+              <q-img class="placeholder" :src="owner.avatarLink" ratio="1" />
+              <q-tooltip>拥有者： {{ owner.username }}</q-tooltip>
+            </q-avatar>
+          </q-btn>
           <q-chip
             square
             outline
@@ -80,7 +86,7 @@
           >
             {{ asset.state }}
           </q-chip>
-          <q-btn color="primary" round outline icon="more_horiz">
+          <q-btn color="gray" round flat icon="more_horiz">
             <q-menu anchor="bottom right" self="top left">
               <q-list style="min-width: 100px">
                 <q-item

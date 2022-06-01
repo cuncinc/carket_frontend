@@ -10,6 +10,13 @@ const routes = [
     ]
   },
   {
+    path: '/users',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: ':address', component: () => import('pages/user/Users.vue') },
+    ]
+  },
+  {
     path: '/audit',
     component: () => import('layouts/AuditLayout.vue'),
     children: [
@@ -25,7 +32,6 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: 'account', component: () => import('pages/account/Account.vue') },
       { path: 'settings', component: () => import('pages/settings/Settings.vue') },
     ]
   },

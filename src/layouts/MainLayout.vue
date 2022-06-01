@@ -158,7 +158,7 @@ export default {
     toPersonPage() {
       setTimeout(() => {
         this.$router.push({
-          path: "/account",
+          path: "/users/" + this.me.address,
         });
       }, 500);
     },
