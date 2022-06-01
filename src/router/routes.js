@@ -6,6 +6,7 @@ const routes = [
     children: [
       { path: 'create', component: () => import('pages/assets/Create.vue') },
       { path: ':aid(\\d+)', component: () => import('pages/assets/AssetsDetail.vue') },
+      { path: ':aid(\\d+)/edit', component: () => import('pages/assets/EditAsset.vue') },
     ]
   },
   {

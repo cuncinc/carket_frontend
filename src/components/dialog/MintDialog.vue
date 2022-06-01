@@ -1,6 +1,9 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="my_card q-dialog-plugin" style="border-radius: 16px">
+    <q-card
+      class="q-dialog-plugin my_card"
+      style="border-radius: 16px; height: 332px"
+    >
       <div v-if="!waiting">
         <q-card-section>
           <div class="title">铸造上链</div>
@@ -15,7 +18,7 @@
         <q-card-actions>
           <div class="column q-gutter-sm" style="width: 100%">
             <q-btn
-              :disable="rate !== null"
+              :disable="rate === null"
               unelevated
               label="铸造"
               @click="onOKClick"

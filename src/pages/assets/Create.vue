@@ -63,16 +63,6 @@
         </q-file>
       </div>
       <div class="item">
-        <div class="label">名称</div>
-        <q-input
-          outlined
-          dense
-          v-model="name"
-          placeholder="给你的艺术品起个名"
-          class="content"
-        />
-      </div>
-      <div class="item">
         <div class="label">类型</div>
         <!-- 这里应该用图片来代替 -->
         <div class="q-gutter-lg">
@@ -81,6 +71,16 @@
           <q-radio v-model="type" label="音乐" val="Music" />
           <q-radio v-model="type" label="文档" val="Document" />
         </div>
+      </div>
+      <div class="item">
+        <div class="label">名称</div>
+        <q-input
+          outlined
+          dense
+          v-model="name"
+          placeholder="给你的艺术品起个名"
+          class="content"
+        />
       </div>
       <div class="item">
         <div class="label">描述</div>
@@ -97,6 +97,7 @@
       <q-btn
         rounded
         unelevated
+        :disabled="!canCreate"
         label="上传艺术品"
         color="primary"
         class="upload-btn"
@@ -215,7 +216,7 @@ export default {
             message: `上传中... ${that.uploadPercentage}%`,
           });
         }
-      }, 500);
+      }, 100);
       axios.post("/assets", form, config).then(
         (response) => {
           this.uploadPercentage = 0;
@@ -250,55 +251,6 @@ export default {
         }
       );
     },
-    updateMe() {
-      var obj = {};
-      let m = JSON.parse(localStorage.me);
-      if (this.me.username !== m.username) obj["username"] = this.me.username;
-      if (this.me.email !== m.email) obj["email"] = this.me.email;
-      if (this.me.bio !== m.bio) obj["bio"] = this.me.bio;
-      axios.put("/users/me", obj).then(
-        (response) => {
-          console.log(response);
-          if (response.status === 200) {
-            localStorage.me = JSON.stringify(this.me);
-            this.$q.notify({
-              type: "positive",
-              position: "top",
-              message: "信息修改成功",
-              timeout: 2000,
-            });
-          }
-        },
-        (error) => {
-          let message = "信息修改失败";
-          if (error.response.status === 403)
-            message = "用户名被占用，请重新输入";
-          this.$q.notify({
-            type: "negative",
-            position: "top",
-            message: message,
-            timeout: 2000,
-          });
-        }
-      );
-    },
-    // show() {
-    //   this.$refs.dialog.show();
-    // },
-    // hide() {
-    //   this.$refs.dialog.hide();
-    // },
-    // onDialogHide() {
-    //   this.$emit("hide");
-    // },
-    // onDetailClick() {
-    //   this.$emit("ok");
-    //   this.hide();
-    // },
-    // onCancelClick() {
-    //   // 我们只需要隐藏对话框
-    //   this.hide();
-    // },
     counterLabelFn({ totalSize }) {
       return `${totalSize}`;
     },
@@ -322,8 +274,11 @@ export default {
   },
 
   computed: {
-    isCoverOK() {
-      return this.cover ? false : true;
+    canCreate() {
+      if (this.name === null || this.name === "") return false;
+      else if (this.desc === null || this.desc === "") return false;
+      else if (this.file === null) return false;
+      else return true;
     },
   },
 };

@@ -84,7 +84,18 @@
             <q-menu anchor="bottom right" self="top left">
               <q-list style="min-width: 100px">
                 <q-item
-                  v-if="!ownerIsMe"
+                  v-if="!onBlockchain"
+                  clickable
+                  v-close-popup
+                  @click="edit"
+                >
+                  <q-item-section avatar>
+                    <q-icon name="edit" />
+                  </q-item-section>
+                  <q-item-section>编辑艺术品</q-item-section>
+                </q-item>
+                <q-item
+                  v-if="!ownerIsMe && onBlockchain"
                   clickable
                   v-close-popup
                   @click="report"
@@ -100,7 +111,12 @@
                   </q-item-section>
                   <q-item-section>打开IPFS源文件</q-item-section>
                 </q-item>
-                <q-item clickable v-close-popup @click="openIpfsJson">
+                <q-item
+                  v-if="onBlockchain"
+                  clickable
+                  v-close-popup
+                  @click="openIpfsJson"
+                >
                   <q-item-section avatar>
                     <q-icon name="api" />
                   </q-item-section>
@@ -113,7 +129,7 @@
       </q-card>
       <q-card flat class="card">
         <!-- <div v-if="asset.state === '在流通'"> -->
-        <div>
+        <div v-if="onBlockchain">
           <div>当前价格</div>
           <div class="row price q-gutter-md">
             <q-icon
@@ -172,6 +188,20 @@
               class="btn-outline"
             />
           </div>
+        </div>
+        <!-- 我的视角：未上架  👇 -->
+        <div v-else-if="!onBlockchain">
+          <div v-if="asset.state === '已通过'">
+            <q-btn
+              label="铸造"
+              @click="mint"
+              unelevated
+              size="lg"
+              class="btn-fullfil"
+            />
+          </div>
+          <div v-if="asset.state === '待审核'"></div>
+          <div v-if="asset.state === '未通过'"></div>
         </div>
         <!-- 访客视角 👇 -->
         <div v-else>
@@ -233,6 +263,7 @@
 
 <script>
 import axios from "src/utils/request.js";
+import MintDialog from "components/dialog/MintDialog";
 import PriceDialog from "components/dialog/PriceDialog";
 import TransferDialog from "components/dialog/TransferDialog";
 import UpDialog from "components/dialog/UpDialog";
@@ -241,6 +272,7 @@ export default {
   data() {
     return {
       ownerIsMe: false,
+      onBlockchain: false,
       likeByMe: false,
       asset: {
         name: null,
@@ -258,8 +290,20 @@ export default {
   },
   methods: {
     buy() {},
-    edit() {},
-    mint() {},
+    edit() {
+      this.$router.push({
+        path: "/assets/" + this.asset.aid + "/edit",
+      });
+    },
+    mint() {
+      let that = this;
+      this.$q.dialog({
+        component: MintDialog,
+        parent: this,
+        aid: ~~that.asset.aid,
+        refresh: this.init,
+      });
+    },
     transfer() {
       let that = this;
       this.$q.dialog({
@@ -408,6 +452,10 @@ export default {
         .then(
           (response) => {
             this.asset = response.data;
+            // 是否在链上
+            if (this.asset.tokenId !== null) this.onBlockchain = true;
+            else this.onBlockchain = false;
+
             // 获取创作者
             axios.get("/users/" + this.asset.creator).then((response) => {
               this.creator = response.data;
@@ -467,6 +515,7 @@ export default {
             this.creator = null;
             this.owner = null;
             this.ownerIsMe = false;
+            this.onBlockchain = false;
             console.log(error);
           }
         );
