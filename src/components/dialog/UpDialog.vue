@@ -9,9 +9,7 @@
           <q-item-label class="item"> 资产价格 </q-item-label>
           <q-input dense v-model.number="price" type="number">
             <template v-slot:prepend>
-              <q-icon
-                name="img:https://openseauserdata.com/files/265128aa51521c90f7905e5a43dcb456_new.svg"
-              />
+              <q-icon name="img:svg/eth.svg" />
             </template>
           </q-input>
         </q-card-section>

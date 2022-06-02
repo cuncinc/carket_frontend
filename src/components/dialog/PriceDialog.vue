@@ -9,9 +9,7 @@
           <q-item-label class="item"> 设置价格 </q-item-label>
           <q-input dense v-model.number="price" type="number">
             <template v-slot:prepend>
-              <q-icon
-                name="img:https://openseauserdata.com/files/265128aa51521c90f7905e5a43dcb456_new.svg"
-              />
+              <q-icon name="img:svg/eth.svg" />
             </template>
           </q-input>
         </q-card-section>
@@ -101,33 +99,31 @@ export default {
       // 是必需的
       this.$emit("ok");
       // 或带有有效负载：this.$emit('ok', { ... })
-      axios
-        .put("/assets/" + this.aid + "/price", { price: ~~this.price })
-        .then(
-          (response) => {
-            // console.log(response);
-            this.refresh(this.aid);
-            this.hide();
-            this.$q.notify({
-              type: "positive",
-              position: "top",
-              message: "修改价格成功",
-              timeout: 2000,
-            });
-            this.waiting = false;
-          },
-          (error) => {
-            console.log(error);
-            this.hide();
-            this.$q.notify({
-              type: "negative",
-              position: "top",
-              message: "修改价格失败",
-              timeout: 2000,
-            });
-            this.waiting = false;
-          }
-        );
+      axios.put("/assets/" + this.aid + "/price", { price: ~~this.price }).then(
+        (response) => {
+          // console.log(response);
+          this.refresh(this.aid);
+          this.hide();
+          this.$q.notify({
+            type: "positive",
+            position: "top",
+            message: "修改价格成功",
+            timeout: 2000,
+          });
+          this.waiting = false;
+        },
+        (error) => {
+          console.log(error);
+          this.hide();
+          this.$q.notify({
+            type: "negative",
+            position: "top",
+            message: "修改价格失败",
+            timeout: 2000,
+          });
+          this.waiting = false;
+        }
+      );
     },
 
     onCancelClick() {

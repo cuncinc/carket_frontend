@@ -30,15 +30,16 @@
     >
       <q-tooltip size="xs">点击复制</q-tooltip>
     </q-btn>
-    <div class="bio">
-      {{ user.bio }}
+
+    <div class="bio text-center">
+      <q-item-label>{{ user.bio }}</q-item-label>
     </div>
 
     <q-card>
       <q-tabs
         v-model="tab"
         dense
-        class="bg-grey-3"
+        class="bg-grey-3 show-tabs"
         align="justify"
         narrow-indicator
       >
@@ -46,73 +47,42 @@
         <q-tab name="market" label="流通的" />
         <q-tab name="own" label="拥有的" />
         <q-tab v-if="isMe" name="not-chain" label="未上链" />
-        <q-tab name="favorite" label="收藏的" />
+        <q-tab v-if="isMe" name="favorite" label="收藏的" />
       </q-tabs>
       <q-separator />
-      <q-tab-panels v-model="tab" animated>
+      <q-tab-panels v-model="tab">
         <q-tab-panel name="created">
-          <div class="text-h6">创建的</div>
-          1111111111111111111
+          <asset-tab :list="createdAssets" />
         </q-tab-panel>
 
         <q-tab-panel name="market">
-          <div class="text-h6">流通的</div>
-          2222222222222222222
+          <asset-tab :list="onSaleAssets" />
         </q-tab-panel>
 
         <q-tab-panel name="own">
-          <div class="text-h6">拥有的</div>
-          3333333333333333333
+          <asset-tab :list="ownedAssets" />
         </q-tab-panel>
+
         <q-tab-panel name="not-chain">
-          <div class="text-h6">未上链的</div>
-          4444444444444444444
+          <asset-tab :list="auditingAssets" />
         </q-tab-panel>
+
         <q-tab-panel name="favorite">
-          <div class="text-h6">收藏的</div>
-          5555555555555555555
+          <asset-tab :list="favoriteAssets" />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
-
-    <!-- <q-card flat>
-      <div id="art-file" class="art-file">
-        <q-img
-          v-if="asset.type === 'Picture'"
-          class="art-file"
-          :src="asset.ipfsLink"
-        />
-        <q-media-player
-          v-else-if="asset.type === 'Video'"
-          type="video"
-          :source="asset.ipfsLink"
-          :autoplay="true"
-          loop
-          hide-volume-btn
-          hide-settings-btn
-          radius="12px"
-          dense
-        />
-        <q-media-player
-          v-else-if="asset.type === 'Music'"
-          type="audio"
-          :source="asset.ipfsLink"
-          :autoplay="false"
-          hide-settings-btn
-          hide-volume-btn
-          style="height: 240px"
-          radius="12px"
-          dense
-        />
-      </div>
-    </q-card> -->
   </q-page>
 </template>
 
 <script>
 import axios from "src/utils/request.js";
+import AssetTab from "components/AssetTab.vue";
 export default {
   name: "Users",
+  components: {
+    AssetTab,
+  },
   data() {
     return {
       user: {
@@ -124,6 +94,11 @@ export default {
       isMe: false,
       address: null,
       tab: "created",
+      createdAssets: [], //1
+      onSaleAssets: [], //2
+      ownedAssets: [], //3
+      auditingAssets: [], //4
+      favoriteAssets: [], //5
     };
   },
   methods: {
@@ -140,10 +115,38 @@ export default {
       axios.get("/users/" + this.address).then(
         (response) => {
           this.user = response.data;
-          console.log(this.user);
-          let me = JSON.parse(localStorage.me);
-          if (me.address === this.user.address) this.isMe = true;
-          else this.isMe = false;
+          if (localStorage.getItem("isAccountLogin") === "true") {
+            let me = JSON.parse(localStorage.me);
+            if (me.address === this.user.address) this.isMe = true;
+            else this.isMe = false;
+          } else {
+            this.isMe = false;
+          }
+
+          axios.get("/assets/" + this.address + "/created").then((response) => {
+            this.createdAssets = response.data;
+          });
+          axios.get("/assets/" + this.address + "/on_sale").then((response) => {
+            this.onSaleAssets = response.data;
+          });
+          axios.get("/assets/" + this.address + "/owned").then((response) => {
+            this.ownedAssets = response.data;
+          });
+          if (this.isMe) {
+            axios
+              .get("/assets/" + this.address + "/auditing")
+              .then((response) => {
+                this.auditingAssets = response.data;
+              });
+            axios
+              .get("/assets/" + this.address + "/favorite")
+              .then((response) => {
+                this.favoriteAssets = response.data;
+              });
+          } else {
+            this.auditingAssets = null;
+            this.favoriteAssets = null;
+          }
         },
         (error) => {
           this.$q.notify({
@@ -189,7 +192,9 @@ export default {
   margin: 0px;
   font-weight: 400;
   font-size: 16px;
-  text-align: center;
-  max-width: 200px;
+}
+
+.show-tabs {
+  margin-top: 40px;
 }
 </style>
