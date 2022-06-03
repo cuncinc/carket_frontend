@@ -46,7 +46,7 @@
               color="primary"
               label="上传"
               padding="sm lg"
-              @click="toCreate()"
+              to="/assets/create"
             >
               <q-tooltip>上传艺术品</q-tooltip>
             </q-btn>
@@ -92,6 +92,7 @@
               size="md"
               color="grey-7"
               icon="account_balance_wallet"
+              @click="walletDrawer = !walletDrawer"
             >
               <q-tooltip>钱包</q-tooltip>
             </q-btn>
@@ -103,13 +104,56 @@
             label="登录"
             padding="sm lg"
             v-else
-            @click="toLoginPage()"
+            to="/login"
           />
         </div>
       </q-toolbar>
     </q-header>
 
     <q-page-container>
+      <q-drawer
+        v-if="isAccountLogin === 'true'"
+        side="right"
+        v-model="walletDrawer"
+        :width="340"
+        overlay
+        bordered
+      >
+        <div class="wallet-drawer">
+          <q-btn flat round icon="close" @click="walletDrawer = false" />
+          <div class="column">
+            <div class="row items-center" style="margin-bottom: 20px">
+              <div
+                style="border-radius: 50%; border: 2px solid rgb(229, 232, 235)"
+              >
+                <q-avatar size="32px">
+                  <q-img class="placeholder" :src="me.avatarLink" ratio="1" />
+                </q-avatar>
+              </div>
+              <q-item-label class="wallet-name">{{ me.username }}</q-item-label>
+              <q-space />
+              <q-btn
+                flat
+                rounded
+                dense
+                class="wallet-address"
+                size="md"
+                @click="copy"
+                :label="
+                  me.address.substring(0, 6) +
+                  '...' +
+                  me.address.substring(38, 42)
+                "
+              >
+                <q-tooltip size="xs">点击复制</q-tooltip>
+              </q-btn>
+            </div>
+            <q-item-label class="wallet-item">钱包余额</q-item-label>
+            <q-item-label class="balance">{{ balance }} VNT</q-item-label>
+          </div>
+          <q-btn flat label="充值" @click="charge" class="charge-btn" />
+        </div>
+      </q-drawer>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -117,6 +161,7 @@
 
 <script>
 import axios from "src/utils/request.js";
+import BalanceDialog from "components/dialog/BalanceDialog";
 export default {
   name: "MainLayout",
   components: {},
@@ -124,6 +169,8 @@ export default {
     return {
       isAccountLogin: localStorage.getItem("isAccountLogin"),
       me: JSON.parse(localStorage.getItem("me")),
+      walletDrawer: false,
+      balance: null,
       accountMenu: [
         { icon: "person", text: "主页" },
         { icon: "favorite", text: "收藏" },
@@ -134,26 +181,12 @@ export default {
     };
   },
   methods: {
-    toCreate() {
-      setTimeout(() => {
-        this.$router.push({
-          path: "/assets/create",
-        });
-      }, 500);
-    },
     actions(action) {
       if (action == "主页") this.toPersonPage();
       else if (action == "收藏") this.toFavorite();
       else if (action == "集合") this.toCollection();
       else if (action == "设置") this.toSettings();
       else if (action == "退出") this.logout();
-    },
-    toLoginPage() {
-      setTimeout(() => {
-        this.$router.push({
-          path: "/login",
-        });
-      }, 400);
     },
     toPersonPage() {
       setTimeout(() => {
@@ -205,10 +238,43 @@ export default {
         );
       }
     },
+    copy() {
+      if (navigator.clipboard) navigator.clipboard.writeText(this.me.address);
+      this.$q.notify({
+        type: "positive",
+        position: "bottom-right",
+        message: "地址已复制",
+        timeout: 1500,
+      });
+    },
+    charge() {
+      let that = this;
+      this.$q.dialog({
+        component: BalanceDialog,
+        parent: this,
+        address: that.me.address,
+        refresh: this.initBalance,
+      });
+    },
+    initBalance() {
+      axios.get("/accounts/me/balance").then(
+        (response) => {
+          // console.log(response);
+          this.balance = response.data.balance;
+        },
+        (error) => {
+          console.log(error);
+          this.balance = 0;
+        }
+      );
+    },
   },
   mounted: function () {
     // console.log("MainLayout mounted");
     this.checkAndRefreshToken();
+  },
+  created: function () {
+    this.initBalance();
   },
 };
 </script>
@@ -227,5 +293,55 @@ export default {
 .header {
   background-color: rgba(255, 255, 255, 94%);
   padding: 10px 8px 10px;
+}
+
+.wallet-drawer {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.wallet-name {
+  margin-left: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: rgb(4, 17, 29);
+}
+
+.wallet-address {
+  padding: 0 12px;
+  color: #6e6e6e;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.wallet-item {
+  font-weight: 500;
+  font-size: 14px;
+  color: rgb(112, 122, 131);
+  text-align: center;
+}
+
+.balance {
+  font-weight: 600;
+  font-size: 20px;
+  color: rgb(4, 17, 29);
+  line-height: 110%;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.charge-btn {
+  width: 100%;
+  border-radius: 10px;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  background-color: rgb(32, 129, 226);
+  color: rgb(255, 255, 255);
+  margin-top: 16px;
 }
 </style>
