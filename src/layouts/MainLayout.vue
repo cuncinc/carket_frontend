@@ -20,7 +20,7 @@
           dense
           type="Search"
           placeholder="搜索艺术品、用户"
-          style="margin-left: 20px; width: 26%"
+          style="margin-left: 20px; width: 50%"
         >
           <template v-slot:prepend>
             <q-icon name="search" />
@@ -30,9 +30,7 @@
         <div
           class="GL__toolbar-link q-ml-sm q-gutter-xl text-heading text-weight-bold row items-center no-wrap"
         >
-          <a href="javascript:void(0)" class="text-black"> 探索 </a>
           <a href="javascript:void(0)" class="text-black"> 排名 </a>
-          <a href="javascript:void(0)" class="text-black"> 资源 </a>
           <a href="javascript:void(0)" class="text-black"> 溯源 </a>
         </div>
 
@@ -51,12 +49,12 @@
               <q-tooltip>上传艺术品</q-tooltip>
             </q-btn>
 
-            <q-btn outline round size="md" color="grey-7" icon="notifications">
+            <!-- <q-btn outline round size="md" color="grey-7" icon="notifications">
               <q-badge rounded color="red" text-color="white" floating>
                 2
               </q-badge>
               <q-tooltip>通知</q-tooltip>
-            </q-btn>
+            </q-btn> -->
 
             <q-btn round flat>
               <q-menu

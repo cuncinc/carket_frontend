@@ -1,15 +1,37 @@
 <template>
   <q-page class="flex flex-center">
-    <img
-      alt="Carket logo"
-      src="carket-logo.svg"
-      style="width: 200px; height: 200px"
-    />
+    <div v-for="asset in list" :key="asset.aid">
+      <asset-card :asset="asset"></asset-card>
+    </div>
   </q-page>
 </template>
 
 <script>
+import axios from "src/utils/request.js";
+import AssetCard from "components/AssetCard.vue";
 export default {
   name: "PageIndex",
+  components: {
+    AssetCard,
+  },
+  data() {
+    return {
+      list: [],
+    };
+  },
+
+  methods: {
+    refresh() {
+      axios
+        .get("/market/assets", { params: { page: 1, num: 10 } })
+        .then((response) => {
+          this.list = response.data;
+        });
+    },
+  },
+
+  mounted: function () {
+    this.refresh();
+  },
 };
 </script>
