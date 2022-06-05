@@ -99,7 +99,7 @@ export default {
       // 是必需的
       this.$emit("ok");
       // 或带有有效负载：this.$emit('ok', { ... })
-      axios.put("/assets/" + this.aid + "/price", { price: ~~this.price }).then(
+      axios.put("/assets/" + this.aid + "/price", { price: this.price }).then(
         (response) => {
           // console.log(response);
           this.refresh(this.aid);

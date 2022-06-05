@@ -171,8 +171,8 @@ export default {
       balance: null,
       accountMenu: [
         { icon: "person", text: "主页" },
-        { icon: "favorite", text: "收藏" },
-        { icon: "library_books", text: "集合" },
+        // { icon: "favorite", text: "收藏" },
+        // { icon: "library_books", text: "集合" },
         { icon: "settings", text: "设置" },
         { icon: "logout", text: "退出" },
       ],

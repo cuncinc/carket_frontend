@@ -99,33 +99,31 @@ export default {
       // 是必需的
       this.$emit("ok");
       // 或带有有效负载：this.$emit('ok', { ... })
-      axios
-        .post("/assets/" + this.aid + "/market", { price: ~~this.price })
-        .then(
-          (response) => {
-            // console.log(response);
-            this.refresh(this.aid);
-            this.hide();
-            this.$q.notify({
-              type: "positive",
-              position: "top",
-              message: "上架成功",
-              timeout: 2000,
-            });
-            this.waiting = false;
-          },
-          (error) => {
-            console.log(error);
-            this.hide();
-            this.$q.notify({
-              type: "negative",
-              position: "top",
-              message: "上架失败",
-              timeout: 2000,
-            });
-            this.waiting = false;
-          }
-        );
+      axios.post("/assets/" + this.aid + "/market", { price: this.price }).then(
+        (response) => {
+          // console.log(response);
+          this.refresh(this.aid);
+          this.hide();
+          this.$q.notify({
+            type: "positive",
+            position: "top",
+            message: "上架成功",
+            timeout: 2000,
+          });
+          this.waiting = false;
+        },
+        (error) => {
+          console.log(error);
+          this.hide();
+          this.$q.notify({
+            type: "negative",
+            position: "top",
+            message: "上架失败",
+            timeout: 2000,
+          });
+          this.waiting = false;
+        }
+      );
     },
 
     onCancelClick() {

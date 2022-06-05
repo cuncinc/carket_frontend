@@ -63,6 +63,7 @@ export default {
   name: "TransferDialog",
   props: {
     aid: Number,
+    refresh: Function,
   },
   data() {
     return {
@@ -102,6 +103,7 @@ export default {
         .post("/assets/" + this.aid + "/blockchain", { rate: this.rate })
         .then(
           (response) => {
+            this.refresh(this.aid);
             this.hide();
             this.waiting = false;
             this.$q.notify({

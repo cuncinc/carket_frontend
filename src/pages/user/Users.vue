@@ -1,10 +1,13 @@
 <template>
   <q-page align="center" class="page text-align">
-    <q-card class="no-shadow" style="border-radius: 16px; margin-top: 144px">
+    <q-card
+      class="placeholder no-shadow"
+      style="border-radius: 16px; margin-top: 144px"
+    >
       <q-img
         :src="user.coverLink"
         style="height: 280px"
-        class="placeholder absolute-center"
+        class="absolute-center"
       />
     </q-card>
     <q-avatar size="120px" style="margin-top: 68px">
@@ -15,7 +18,6 @@
         style="border: 4px solid #ffffff; border-radius: 100%"
       />
     </q-avatar>
-    <!-- <q-btn rounded label="修改封面" class="no-shadow text-black"> </q-btn> -->
     <div class="username text-center">
       {{ user.username }}
     </div>

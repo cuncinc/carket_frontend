@@ -1,199 +1,138 @@
 <template>
   <q-page align="center" class="page body text-align">
     <div>
-      <q-splitter v-model="splitterModel">
-        <template v-slot:before>
-          <q-tabs
-            v-model="tab"
-            vertical
-            indicator-color="transparent"
-            active-color="primary"
-            class="text-grey-8"
-          >
-            <q-tab name="profile" icon="person" label="个人信息" />
-            <q-tab name="account" icon="lock" label="账号隐私" />
-            <q-tab name="wallet" icon="wallet" label="钱包设置" />
-          </q-tabs>
-        </template>
-
-        <template v-slot:after>
-          <q-tab-panels
-            v-model="tab"
-            animated
-            swipeable
-            vertical
-            transition-prev="jump-up"
-            transition-next="jump-up"
-          >
-            <q-tab-panel name="profile">
-              <div class="title">编辑个人信息</div>
-              <div>
-                <div class="left">
-                  <div class="item">
-                    <div class="label">用户名</div>
-                    <q-input
-                      outlined
-                      dense
-                      v-model="me.username"
-                      class="content"
-                      lazy-rules
-                      :rules="[
-                        (val) => (val && val.length > 0) || '用户名不能为空',
-                      ]"
-                    />
-                  </div>
-                  <div class="item">
-                    <div class="label">个性签名</div>
-                    <q-input
-                      outlined
-                      dense
-                      clearable
-                      type="textarea"
-                      v-model="me.bio"
-                      placeholder="编辑个性签名"
-                      class="content"
-                    />
-                  </div>
-                  <div class="item">
-                    <div class="label">电子邮箱</div>
-                    <q-input
-                      outlined
-                      dense
-                      clearable
-                      placeholder="编辑电子邮箱"
-                      type="email"
-                      v-model="me.email"
-                      class="content"
-                    />
-                  </div>
+      <q-tab-panel name="profile">
+        <div class="title">编辑个人信息</div>
+        <div>
+          <div class="left">
+            <div class="item">
+              <div class="label">用户名</div>
+              <q-input
+                outlined
+                dense
+                v-model="me.username"
+                class="content"
+                lazy-rules
+                :rules="[(val) => (val && val.length > 0) || '用户名不能为空']"
+              />
+            </div>
+            <div class="item">
+              <div class="label">个性签名</div>
+              <q-input
+                outlined
+                dense
+                clearable
+                type="textarea"
+                v-model="me.bio"
+                placeholder="编辑个性签名"
+                class="content"
+              />
+            </div>
+            <div class="item">
+              <div class="label">电子邮箱</div>
+              <q-input
+                outlined
+                dense
+                clearable
+                placeholder="编辑电子邮箱"
+                type="email"
+                v-model="me.email"
+                class="content"
+              />
+            </div>
+            <q-btn
+              rounded
+              unelevated
+              label="保存修改"
+              color="primary"
+              class="save-btn"
+              :disable="isInfoOK"
+              @click="updateMe"
+            />
+          </div>
+          <div class="right">
+            <div class="item">
+              <div class="label">头像</div>
+              <div
+                class="placeholder"
+                style="width: 100px; border-radius: 50px"
+              >
+                <q-avatar size="100px">
+                  <q-img :src="avatarLink" ratio="1" />
+                </q-avatar>
+              </div>
+              <q-file
+                dense
+                outlined
+                clearable
+                counter
+                v-model="avatar"
+                label="选择头像"
+                accept="image/*"
+                @input="avatarLoaded"
+                :counter-label="counterLabelFn"
+                style="margin-top: 16px"
+              >
+                <template v-slot:hint></template>
+                <template v-slot:after>
                   <q-btn
                     rounded
+                    dense
                     unelevated
-                    label="保存"
+                    padding="xs md"
+                    :loading="avatarLoading"
+                    :percentage="avatarPercentage"
                     color="primary"
-                    :disable="isInfoOK"
-                    @click="updateMe()"
+                    label="上传头像"
+                    :disable="isAvatarOK"
+                    @click="updateAvatar()"
                   />
-                </div>
-                <div class="right">
-                  <div class="item">
-                    <div class="label">头像</div>
-                    <q-avatar size="100px">
-                      <q-img
-                        :src="me.avatarLink"
-                        class="placeholder"
-                        ratio="1"
-                      />
-                    </q-avatar>
-                    <q-file
-                      dense
-                      outlined
-                      clearable
-                      counter
-                      v-model="avatar"
-                      label="选择头像"
-                      accept="image/*"
-                      style="margin-top: 16px"
-                    >
-                      <template v-slot:hint></template>
-                      <template v-slot:after>
-                        <q-btn
-                          rounded
-                          dense
-                          unelevated
-                          padding="xs md"
-                          :loading="avatarLoading"
-                          :percentage="avatarPercentage"
-                          color="primary"
-                          label="上传头像"
-                          :disable="isAvatarOK"
-                          @click="updateAvatar()"
-                        />
-                      </template>
-                    </q-file>
-                  </div>
-                  <div class="item">
-                    <div class="label">封面</div>
-                    <q-img
-                      :src="me.coverLink"
-                      class="placeholder"
-                      style="
-                        border-radius: 10px;
-                        width: 100%;
-                        min-height: 160px;
-                      "
-                    />
-                    <q-file
-                      dense
-                      outlined
-                      clearable
-                      counter
-                      v-model="cover"
-                      label="选择封面"
-                      accept="image/*"
-                      style="margin-top: 16px"
-                    >
-                      <template v-slot:hint></template>
-                      <template v-slot:after>
-                        <q-btn
-                          rounded
-                          dense
-                          unelevated
-                          :loading="coverLoading"
-                          :percentage="coverPercentage"
-                          padding="xs md"
-                          color="primary"
-                          label="上传封面"
-                          :disable="isCoverOK"
-                          @click="updateCover()"
-                        />
-                      </template>
-                    </q-file>
-                  </div>
-                </div>
+                </template>
+              </q-file>
+            </div>
+            <div class="item">
+              <div class="label">封面</div>
+              <div
+                class="placeholder"
+                style="border-radius: 10px; width: 100%; min-height: 160px"
+              >
+                <q-img
+                  :src="coverLink"
+                  style="border-radius: 10px; min-height: 160px"
+                />
               </div>
-            </q-tab-panel>
-
-            <q-tab-panel name="account">
-              <div class="text-h4 q-mb-md">Alarms</div>
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                praesentium cumque magnam odio iure quidem, quod illum numquam
-                possimus obcaecati commodi minima assumenda consectetur culpa
-                fuga nulla ullam. In, libero.
-              </p>
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                praesentium cumque magnam odio iure quidem, quod illum numquam
-                possimus obcaecati commodi minima assumenda consectetur culpa
-                fuga nulla ullam. In, libero.
-              </p>
-            </q-tab-panel>
-
-            <q-tab-panel name="wallet">
-              <div class="text-h4 q-mb-md">Movies</div>
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                praesentium cumque magnam odio iure quidem, quod illum numquam
-                possimus obcaecati commodi minima assumenda consectetur culpa
-                fuga nulla ullam. In, libero.
-              </p>
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                praesentium cumque magnam odio iure quidem, quod illum numquam
-                possimus obcaecati commodi minima assumenda consectetur culpa
-                fuga nulla ullam. In, libero.
-              </p>
-              <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-                praesentium cumque magnam odio iure quidem, quod illum numquam
-                possimus obcaecati commodi minima assumenda consectetur culpa
-                fuga nulla ullam. In, libero.
-              </p>
-            </q-tab-panel>
-          </q-tab-panels>
-        </template>
-      </q-splitter>
+              <q-file
+                dense
+                outlined
+                clearable
+                counter
+                v-model="cover"
+                label="选择封面"
+                :counter-label="counterLabelFn"
+                @input="coverLoaded"
+                accept="image/*"
+                style="margin-top: 16px"
+              >
+                <template v-slot:hint></template>
+                <template v-slot:after>
+                  <q-btn
+                    rounded
+                    dense
+                    unelevated
+                    :loading="coverLoading"
+                    :percentage="coverPercentage"
+                    padding="xs md"
+                    color="primary"
+                    label="上传封面"
+                    :disable="isCoverOK"
+                    @click="updateCover()"
+                  />
+                </template>
+              </q-file>
+            </div>
+          </div>
+        </div>
+      </q-tab-panel>
     </div>
   </q-page>
 </template>
@@ -215,6 +154,8 @@ export default {
       cover: null,
       coverLoading: false,
       coverPercentage: 0,
+      coverLink: null,
+      avatarLink: null,
     };
   },
   methods: {
@@ -328,6 +269,33 @@ export default {
         }
       );
     },
+    counterLabelFn({ totalSize }) {
+      return `${totalSize}`;
+    },
+    coverLoaded() {
+      console.log(this.cover);
+      if (this.cover !== null) {
+        const reader = new FileReader();
+        let that = this;
+        reader.onload = function fileReadCompleted() {
+          that.coverLink = reader.result;
+          console.log(reader.result);
+        };
+        reader.readAsDataURL(this.cover);
+      } else this.coverLink = this.me.coverLink;
+    },
+    avatarLoaded() {
+      console.log(this.avatar);
+      if (this.avatar !== null) {
+        const reader = new FileReader();
+        let that = this;
+        reader.onload = function fileReadCompleted() {
+          that.avatarLink = reader.result;
+          console.log(reader.result);
+        };
+        reader.readAsDataURL(this.avatar);
+      } else this.avatarLink = this.me.avatarLink;
+    },
   },
   beforeCreate: function () {
     console.log("beforeCreate");
@@ -345,6 +313,10 @@ export default {
       });
     }
     console.log("beforeCreate done");
+  },
+  created: function () {
+    this.avatarLink = this.me.avatarLink;
+    this.coverLink = this.me.coverLink;
   },
 
   computed: {
@@ -366,40 +338,6 @@ export default {
       } else if (this.me.username === "") return true;
       return false;
     },
-
-    //     async isUsernameValid() {
-    //       let username = this.me.username;
-    //       if (username === JSON.parse(localStorage.me).username) {
-    //         return false;
-    //       }
-    //       var result = false;
-    //       if (username) {
-    //           async () =>{
-
-    //           }
-    //         await axios
-    //           .get("/account", {
-    //             params: {
-    //               username: username,
-    //             },
-    //           })
-    //           .then(
-    //             (response) => {
-    //               if (response.status === 200) {
-    //                 this.result = true;
-    //               } else {
-    //                 this.result = false;
-    //               }
-    //             },
-    //             (error) => {
-    //               console.log(error);
-    //               this.result = false;
-    //             }
-    //           );
-    //       }
-    //       console.log(username + ":" + result);
-    //       return result;
-    //     },
   },
 };
 </script>
@@ -450,5 +388,11 @@ export default {
 
 .content {
   font-size: 14px;
+}
+
+.save-btn {
+  line-height: 48px;
+  padding: 0 40px;
+  font-weight: 900;
 }
 </style>
