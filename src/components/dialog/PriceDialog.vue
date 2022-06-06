@@ -1,6 +1,9 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="my_card q-dialog-plugin" style="border-radius: 16px">
+    <q-card
+      class="my_card q-dialog-plugin"
+      style="border-radius: 16px; height: auto"
+    >
       <div v-if="!waiting">
         <q-card-section>
           <q-item-label class="title">修改价格</q-item-label>

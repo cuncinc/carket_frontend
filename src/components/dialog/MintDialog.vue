@@ -2,7 +2,7 @@
   <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card
       class="q-dialog-plugin my_card"
-      style="border-radius: 16px; height: 332px"
+      style="border-radius: 16px; height: auto"
     >
       <div v-if="!waiting">
         <q-card-section>

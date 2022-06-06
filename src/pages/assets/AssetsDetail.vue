@@ -271,6 +271,7 @@ import MintDialog from "components/dialog/MintDialog";
 import PriceDialog from "components/dialog/PriceDialog";
 import TransferDialog from "components/dialog/TransferDialog";
 import UpDialog from "components/dialog/UpDialog";
+import BuyDialog from "components/dialog/BuyDialog";
 export default {
   name: "AssetsDetail",
   data() {
@@ -293,7 +294,20 @@ export default {
     };
   },
   methods: {
-    buy() {},
+    buy() {
+      let that = this;
+      this.$q.dialog({
+        component: BuyDialog,
+        persistent: true,
+        cancel: true,
+        parent: this,
+        aid: ~~that.asset.aid,
+        asset: that.asset,
+        creator: that.creator,
+        owner: that.owner,
+        refresh: this.init,
+      });
+    },
     edit() {
       this.$router.push({
         path: "/assets/" + this.asset.aid + "/edit",
@@ -303,6 +317,8 @@ export default {
       let that = this;
       this.$q.dialog({
         component: MintDialog,
+        persistent: true,
+        cancel: true,
         parent: this,
         aid: ~~that.asset.aid,
         refresh: this.init,
@@ -321,6 +337,8 @@ export default {
       let that = this;
       this.$q.dialog({
         component: PriceDialog,
+        persistent: true,
+        cancel: true,
         parent: this,
         aid: ~~that.asset.aid,
         refresh: this.init,
@@ -330,6 +348,8 @@ export default {
       let that = this;
       this.$q.dialog({
         component: UpDialog,
+        persistent: true,
+        cancel: true,
         parent: this,
         aid: ~~that.asset.aid,
         refresh: this.init,

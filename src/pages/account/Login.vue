@@ -136,14 +136,6 @@
               </q-tab-panels>
               <div class="q-mx-md">
                 <div class="row">
-                  <div class="col text-left">
-                    <q-checkbox v-model="autoLogin" label="自动登录" />
-                  </div>
-                  <div class="col text-right">
-                    <q-btn no-caps color="gray7" flat label="忘记密码" />
-                  </div>
-                </div>
-                <div class="row">
                   <div class="col">
                     <q-btn
                       rounded
@@ -163,6 +155,9 @@
                   </div>
                 </div>
                 <div class="row q-pt-md">
+                  <div class="col text-left">
+                    <q-btn no-caps color="gray7" flat label="忘记密码" />
+                  </div>
                   <div class="col text-right">
                     <q-btn
                       to="/register"

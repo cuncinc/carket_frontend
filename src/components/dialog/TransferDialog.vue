@@ -1,6 +1,9 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="my_card q-dialog-plugin" style="border-radius: 16px">
+    <q-card
+      class="my_card q-dialog-plugin"
+      style="border-radius: 16px; height: auto"
+    >
       <div>
         <q-card-section>
           <q-item-label class="title">转让资产</q-item-label>
