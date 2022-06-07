@@ -260,6 +260,7 @@
           </q-card>
         </q-slide-transition>
       </q-card>
+      <events-tab :list="eventsList" style="width:632px"/>
     </div>
     <div style="margin-bottom: 64px" />
   </q-page>
@@ -272,8 +273,12 @@ import PriceDialog from "components/dialog/PriceDialog";
 import TransferDialog from "components/dialog/TransferDialog";
 import UpDialog from "components/dialog/UpDialog";
 import BuyDialog from "components/dialog/BuyDialog";
+import EventsTab from "components/EventsTab.vue";
 export default {
   name: "AssetsDetail",
+  components: {
+    EventsTab,
+  },
   data() {
     return {
       ownerIsMe: false,
@@ -291,6 +296,7 @@ export default {
       activityVisible: false,
       priceVisible: false,
       moreVisible: false,
+      eventsList: null,
     };
   },
   methods: {
@@ -543,6 +549,14 @@ export default {
             console.log(error);
           }
         );
+      // 获取事件记录
+      axios.get("/events", { params: { aid: id } }).then(
+        (response) => {
+          this.eventsList = response.data;
+          console.log(this.eventsList);
+        },
+        (error) => {}
+      );
     },
   },
   watch: {

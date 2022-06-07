@@ -37,7 +37,7 @@
       <q-item-label>{{ user.bio }}</q-item-label>
     </div>
 
-    <q-card>
+    <q-card style="border-radius: 16px">
       <q-tabs
         v-model="tab"
         dense
@@ -74,16 +74,20 @@
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
+
+    <events-tab :list="eventsList" needAsset="true" style="margin-top: 80px" />
   </q-page>
 </template>
 
 <script>
 import axios from "src/utils/request.js";
 import AssetTab from "components/AssetTab.vue";
+import EventsTab from "components/EventsTab.vue";
 export default {
   name: "Users",
   components: {
     AssetTab,
+    EventsTab,
   },
   data() {
     return {
@@ -101,6 +105,7 @@ export default {
       ownedAssets: [], //3
       auditingAssets: [], //4
       favoriteAssets: [], //5
+      eventsList: [],
     };
   },
   methods: {
@@ -160,6 +165,13 @@ export default {
           this.user = null;
           this.isMe = false;
         }
+      );
+
+      axios.get("/events", { params: { address: this.address } }).then(
+        (response) => {
+          this.eventsList = response.data;
+        },
+        (error) => {}
       );
     },
   },
